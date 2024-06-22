@@ -10,6 +10,7 @@
     "@/pages/?(.*)$",
     "@/components/?(.*)$",
     "@/redux/?(.*)$",
+    "@/hooks/?(.*)$",
     "@/utils/?(.*)$",
     "@/constants/?(.*)$",
     "@/common/?(.*)$",
