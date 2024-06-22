@@ -23,4 +23,3 @@ const AuthLayout: FC<{ children: ReactNode }> = ({ children }) => (
 )
 
 export default AuthLayout
-

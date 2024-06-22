@@ -27,4 +27,3 @@ const MonroeButton: FC<IMonroeButtonProps> = ({ isDisabled, label, onClick, type
 )
 
 export default MonroeButton
-
