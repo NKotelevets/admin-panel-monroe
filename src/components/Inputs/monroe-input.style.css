@@ -1,0 +1,15 @@
+.input {
+  background-color: #FFFFFF !important;
+  border-color: #D8D7DB;
+  border-radius: 2px;
+  box-shadow: none;
+  color: rgba(26, 22, 87, 0.85) !important;
+  padding: 8px 12px;
+}
+
+.input:hover,
+.input:focus,
+.input:focus-within {
+  border-color: #888791;
+  box-shadow: none;
+}

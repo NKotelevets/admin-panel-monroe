@@ -14,5 +14,18 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    "quotes": [
+      "warn",
+      "single",
+      {
+        "avoidEscape": true,
+        "allowTemplateLiterals": true
+      }
+    ],
+    "semi": ["warn", "never"],
+    "@typescript-eslint/no-unused-vars": "error",
+    "no-console": 1,
+    "react/no-unescaped-entities": "off",
+    "react-hooks/exhaustive-deps": "off"
   },
 }

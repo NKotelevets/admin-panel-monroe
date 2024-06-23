@@ -1,0 +1,74 @@
+.custom-checkbox .ant-checkbox-inner {
+  border-radius: 2px;
+  height: 16px;
+  width: 16px;
+}
+
+.custom-checkbox:hover .ant-checkbox .ant-checkbox-inner {
+  border-color: #3E34CA;
+}
+
+.custom-checkbox .ant-checkbox:hover .ant-checkbox-inner {
+  border-color: #3E34CA;
+}
+
+.custom-checkbox .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #3E34CA;
+  border-color: #3E34CA;
+}
+
+.ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
+  border-color: #3E34CA;
+  background-color: #3E34CA;
+}
+
+.forgot-password-tooltip {
+  width: 300px;
+  max-width: 300px;
+}
+
+.forgot-password-tooltip .ant-tooltip-content .ant-tooltip-inner {
+  text-align: center !important;
+}
+
+.forgot-password {
+  color: #3E34CA !important;
+}
+
+@media (min-width: 1440px) {
+  .wrapper {
+    width: 100% !important;
+    min-width: 600px;
+  }
+
+  .title {
+    font-size: 44px !important;
+  }
+
+  .subtitle {
+    font-size: 30px !important;
+  }
+
+  .custom-checkbox .ant-checkbox-inner {
+    height: 24px;
+    width: 24px;
+  }
+
+  h4 {
+    font-size: 20px !important;
+  }
+
+  .forgot-password,
+  .checkbox-text {
+    font-size: 22px !important;
+  }
+
+  input {
+    font-size: 22px !important;
+  }
+
+  button {
+    font-size: 22px !important;
+    height: 60px !important;
+  }
+}

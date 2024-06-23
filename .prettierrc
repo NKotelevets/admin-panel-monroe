@@ -5,7 +5,19 @@
   "tabWidth": 2,
   "useTabs": false,
   "plugins": ["@trivago/prettier-plugin-sort-imports"],
-  "importOrder": ["@mui/?(.*)$", "@/redux/?(.*)$", ".css"],
+  "importOrder": [
+    "@mui/?(.*)$",
+    "@/pages/?(.*)$",
+    "@/components/?(.*)$",
+    "@/layouts/?(.*)$",
+    "@/redux/?(.*)$",
+    "@/hooks/?(.*)$",
+    "@/utils/?(.*)$",
+    "@/constants/?(.*)$",
+    "@/common/?(.*)$",
+    ".css",
+    "@/assets/?(.*)$"
+  ],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
   "printWidth": 120
