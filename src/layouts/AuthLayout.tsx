@@ -11,9 +11,9 @@ const AuthLayout: FC<{ children: ReactNode }> = ({ children }) => (
         alt="layout image"
         style={{
           height: '100vh',
-          width: 'auto',
-          maxWidth: '70vw',
+          width: '60vw',
           display: 'block',
+          objectFit: 'fill',
         }}
       />
     </div>

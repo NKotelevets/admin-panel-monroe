@@ -27,11 +27,17 @@ const Notification = () => {
         setSeconds((state) => state + 1)
       }, 1000)
 
-      if (seconds >= 6) {
+      if (seconds >= 5) {
         cleanError()
         setSeconds(0)
         clearInterval(interval)
       }
+    }
+
+    if (!error.message && interval) {
+      cleanError()
+      setSeconds(0)
+      clearInterval(interval)
     }
 
     return () => {
@@ -47,13 +53,29 @@ const Notification = () => {
     <Flex
       style={{
         position: 'absolute',
-        right: '20px',
-        bottom: error.message && seconds < 4 ? '20px' : '5px',
-        opacity: error.message && seconds < 4 ? 1 : 0,
-        transition: 'all 0.7s linear 0s',
+        right: '24px',
+        bottom: error.message ? '20px' : '5px',
+        opacity: error.message ? 1 : 0,
+        transition: 'all 0.3s linear 0s',
+        zIndex: 999,
       }}
     >
-      <Alert message={error.message} showIcon type="error" closable onClose={() => cleanError()} />
+      {error.message && (
+        <Alert
+          style={{
+            width: 'calc(40vw - 48px)',
+            padding: '9px 16px',
+          }}
+          message={error.message}
+          showIcon
+          type="error"
+          closable
+          onClose={() => {
+            cleanError()
+            setSeconds(0)
+          }}
+        />
+      )}
     </Flex>
   )
 }

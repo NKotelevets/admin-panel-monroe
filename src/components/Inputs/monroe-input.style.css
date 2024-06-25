@@ -13,3 +13,9 @@
   border-color: #888791;
   box-shadow: none;
 }
+
+.input svg {
+  fill: #1A1657D9;
+  width: 16px;
+  height: 16px;
+}

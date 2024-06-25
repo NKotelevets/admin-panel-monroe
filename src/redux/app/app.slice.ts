@@ -1,4 +1,4 @@
-import { createSlice, isAnyOf } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
 import { authApi } from '@/redux/auth/auth.api'
 import { userApi } from '@/redux/user/user.api'
@@ -32,13 +32,15 @@ export const appSlice = createSlice({
     },
   },
   extraReducers: (builder) =>
-    builder.addMatcher(
-      isAnyOf(authApi.endpoints.signIn.matchRejected, userApi.endpoints.getUser.matchRejected),
-      (state, action) => {
+    builder
+      .addMatcher(userApi.endpoints.getUser.matchRejected, (state, action) => {
         state.error.message = (action.payload?.data as IDetailedError).details
         state.error.timestamp = new Date().getTime()
-      },
-    ),
+      })
+      .addMatcher(authApi.endpoints.signIn.matchRejected, (state) => {
+        state.error.message = 'Invalid Email/Password'
+        state.error.timestamp = new Date().getTime()
+      }),
 })
 
 export const { cleanError } = appSlice.actions

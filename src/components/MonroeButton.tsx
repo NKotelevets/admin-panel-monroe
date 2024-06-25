@@ -15,6 +15,7 @@ const MonroeButton: FC<IMonroeButtonProps> = ({ isDisabled, label, onClick, type
       border: 0,
       height: '40px',
       width: '100%',
+      fontSize: '16px',
     }}
     type={type}
     onClick={onClick}

@@ -24,7 +24,12 @@ import './sign-in.styles.css'
 import LogotypeIcon from '@/assets/icons/logotype.svg'
 
 const validationSchema = Yup.object().shape({
-  email: Yup.string().email('Invalid email format').required('Email is required'),
+  email: Yup.string()
+    .email('Incorrect email')
+    .test('is-email', 'Incorrect email', (value) =>
+      value ? /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value) : true,
+    )
+    .required('Email is required'),
   password: Yup.string().required('Password is required'),
 })
 
@@ -39,7 +44,8 @@ const SignIn = () => {
 
   const handleSubmit = (values: { email: string; password: string }) =>
     signIn({
-      ...values,
+      email: values.email.toLowerCase(),
+      password: values.password,
       isStaySignIn: isStaySignedIn,
     })
       .unwrap()
@@ -92,6 +98,7 @@ const SignIn = () => {
                         style={{
                           color: 'rgba(26, 22, 87, 0.85)',
                           fontSize: '14px',
+                          fontWeight: 400,
                           margin: 0,
                         }}
                       >
@@ -104,7 +111,7 @@ const SignIn = () => {
                         name="email"
                         label="Email"
                         error={errors.email}
-                        value={values.email}
+                        value={values.email.toLowerCase()}
                         onChange={handleChange}
                         placeholder="Enter your email here"
                       />
@@ -165,4 +172,3 @@ const SignIn = () => {
 }
 
 export default SignIn
-
