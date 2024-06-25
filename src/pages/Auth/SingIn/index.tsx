@@ -17,7 +17,7 @@ import { useLazyGetUserQuery } from '@/redux/user/user.api'
 
 import { useCookies } from '@/hooks/useCookies'
 
-import { AUTH_PAGES, PATH_TO_PROTECTED_PAGE } from '@/constants/paths'
+import { AUTH_PAGES, PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE } from '@/constants/paths'
 
 import './sign-in.styles.css'
 
@@ -50,7 +50,7 @@ const SignIn = () => {
         getUserData()
 
         if ((prevRoute && AUTH_PAGES.includes(prevRoute)) || !prevRoute) {
-          navigate(PATH_TO_PROTECTED_PAGE)
+          navigate(PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE)
         } else {
           navigate(prevRoute)
         }
@@ -165,4 +165,3 @@ const SignIn = () => {
 }
 
 export default SignIn
-

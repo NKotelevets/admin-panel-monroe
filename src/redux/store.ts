@@ -5,6 +5,8 @@ import createWebStorage from 'redux-persist/lib/storage/createWebStorage'
 import { appSlice } from '@/redux/app/app.slice'
 import { authApi } from '@/redux/auth/auth.api'
 import { authReducer } from '@/redux/auth/auth.reducer'
+import { leaguesApi } from '@/redux/leagues/leagues.api'
+import { leaguesReducer } from '@/redux/leagues/leagues.reducer'
 import { userApi } from '@/redux/user/user.api'
 import { userReducer } from '@/redux/user/user.reducer'
 
@@ -34,6 +36,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   ...authReducer,
   ...userReducer,
+  ...leaguesReducer,
   [appSlice.reducerPath]: appSlice.reducer,
 })
 
@@ -47,7 +50,7 @@ const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, REGISTER],
       },
-    }).concat([authApi.middleware, userApi.middleware]),
+    }).concat([authApi.middleware, userApi.middleware, leaguesApi.middleware]),
 })
 
 export type TRootState = ReturnType<typeof store.getState>

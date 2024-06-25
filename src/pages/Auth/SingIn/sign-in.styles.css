@@ -35,7 +35,7 @@
   color: #3E34CA !important;
 }
 
-@media (min-width: 1440px) {
+/* @media (min-width: 1440px) {
   .wrapper {
     width: 100% !important;
     min-width: 600px;
@@ -71,4 +71,4 @@
     font-size: 22px !important;
     height: 60px !important;
   }
-}
+} */

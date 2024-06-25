@@ -1,0 +1,25 @@
+.ant-table {
+  overflow: auto;
+}
+
+.ant-table-thead th {
+  font-weight: 500;
+  color: rgba(26, 22, 87, 0.85) !important;
+  background: #F1F0FF !important;
+  padding: 16px !important;
+}
+
+.import-button {
+  margin-right: 8px;
+  border-radius: 2px;
+  border: 1px solid #626169;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.02);
+  font-size: 14px;
+  font-weight: 400;
+  height: 32px;
+}
+
+.import-button:hover {
+  border: '1px solid #BC261B' !important;
+}
