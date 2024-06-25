@@ -67,16 +67,11 @@ const MonroeTable = () => {
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
           onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys as string[], confirm)}
+          onPressEnter={() => handleSearch(confirm)}
           style={{ marginBottom: 8, display: 'block' }}
         />
         <Space style={{ width: '100%' }}>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys as string[], confirm)}
-            size="small"
-            style={{ width: '50%' }}
-          >
+          <Button type="primary" onClick={() => handleSearch(confirm)} size="small" style={{ width: '50%' }}>
             Search
           </Button>
           <Button onClick={() => clearFilters && handleReset(clearFilters)} size="small" style={{ width: '50%' }}>
@@ -237,7 +232,7 @@ const MonroeTable = () => {
     // }
   }
 
-  const handleSearch = (selectedKeys: string[], confirm: FilterDropdownProps['confirm']) => {
+  const handleSearch = (confirm: FilterDropdownProps['confirm']) => {
     confirm()
   }
 
@@ -249,7 +244,6 @@ const MonroeTable = () => {
       pagination={tableParams.pagination}
       loading={isLoading}
       onChange={handleTableChange}
-      // scroll={{ x: 1500, y: 1000 }}
       rowSelection={{
         type: 'checkbox',
       }}

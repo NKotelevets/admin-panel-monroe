@@ -8,19 +8,12 @@
   border-color: #D8D9DB !important;
 }
 
-.custom-checkbox:hover .ant-checkbox .ant-checkbox-inner {
-  border-color: #3E34CA;
-}
-
+.custom-checkbox:hover .ant-checkbox .ant-checkbox-inner,
 .custom-checkbox .ant-checkbox:hover .ant-checkbox-inner {
   border-color: #3E34CA;
 }
 
-.custom-checkbox .ant-checkbox-checked .ant-checkbox-inner {
-  background-color: #3E34CA;
-  border-color: #3E34CA;
-}
-
+.custom-checkbox .ant-checkbox-checked .ant-checkbox-inner,
 .ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
   border-color: #3E34CA;
   background-color: #3E34CA;
@@ -39,8 +32,9 @@
   color: #3E34CA !important;
 }
 
-@media (min-width: 1440px) {
-  /* .wrapper {
+
+/* @media (min-width: 1440px) {
+  .wrapper {
     width: 100% !important;
     min-width: 600px;
   }
@@ -58,20 +52,20 @@
     width: 24px;
   } */
 
-  /* h4 {
+/* h4 {
     font-size: 20px !important;
   } */
 
-  /* .forgot-password,
+/* .forgot-password,
   .checkbox-text {
     font-size: 22px !important;
   } */
 
-  /* input {
+/* input {
     font-size: 22px !important;
   } */
 
-  /* button {
+/* button {
       font-size: 16px !important;
       height: 40px !important;
     }
@@ -88,4 +82,3 @@
     input {
       font-size: 22px !important;
     } */
-}
