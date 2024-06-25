@@ -10,8 +10,7 @@ import { useLogout } from '@/hooks/useLogout'
 
 import {
   AUTH_PAGES,
-  PATH_TO_PROTECTED_PAGE,
-  PATH_TO_RANDOM_TEAM_PAGE,
+  PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE,
   PATH_TO_SIGN_IN_PAGE,
   PROTECTED_PAGES,
 } from '@/constants/paths'
@@ -21,7 +20,6 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { access, refresh, isUpdatedTokens, setIsUpdatedTokens, redirectToLogin, updateTokens } = useAuthSlice()
   const location = useLocation()
   const isProtectedPage = PROTECTED_PAGES.includes(location.pathname)
-  const isTeamPage = location.pathname.includes(PATH_TO_RANDOM_TEAM_PAGE)
   const { onLogOut } = useLogout()
   const { cookies, createCookie } = useCookies()
   const [searchParams] = useSearchParams()
@@ -52,7 +50,7 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       getUserData()
     }
 
-    if (location.pathname === '/' && cookies.accessToken) navigate(PATH_TO_PROTECTED_PAGE)
+    if (location.pathname === '/' && cookies.accessToken) navigate(PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE)
 
     if (location.pathname === '/' && !cookies.accessToken) navigate(PATH_TO_SIGN_IN_PAGE)
 
@@ -60,11 +58,11 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       if (prevRoute) {
         navigate(prevRoute)
       } else {
-        navigate(PATH_TO_PROTECTED_PAGE)
+        navigate(PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE)
       }
     }
 
-    if (!cookies.accessToken && (isProtectedPage || isTeamPage)) {
+    if (!cookies.accessToken && isProtectedPage) {
       onLogOut()
     }
   }, [cookies.accessToken])

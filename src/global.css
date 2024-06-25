@@ -9,3 +9,16 @@
 #root {
   position: relative
 }
+
+.svg-wrapper svg {
+  display: block;
+}
+
+.header-icon {
+  margin: 0 12px
+}
+
+.ant-dropdown-menu {
+  margin-top: 10px !important;
+  padding: 0 !important;
+}
