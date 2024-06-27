@@ -32,8 +32,7 @@
   color: #3E34CA !important;
 }
 
-
-/* @media (min-width: 1440px) {
+@media (width > 1660px) {
   .wrapper {
     width: 100% !important;
     min-width: 600px;
@@ -50,35 +49,20 @@
   .custom-checkbox .ant-checkbox-inner {
     height: 24px;
     width: 24px;
-  } */
+  }
 
-/* h4 {
-    font-size: 20px !important;
-  } */
-
-/* .forgot-password,
+  .forgot-password,
   .checkbox-text {
     font-size: 22px !important;
-  } */
+  }
 
-/* input {
-    font-size: 22px !important;
-  } */
+  .sign-in-button {
+    font-size: 24px !important;
+    height: 60px !important;
+  }
 
-/* button {
-      font-size: 16px !important;
-      height: 40px !important;
-    }
-
-    h4 {
-      font-size: 20px !important;
-    }
-
-    .forgot-password,
-    .checkbox-text {
-      font-size: 22px !important;
-    }
-
-    input {
-      font-size: 22px !important;
-    } */
+  .logotype-icon svg {
+    height: 64px;
+    width: 144px;
+  }
+}

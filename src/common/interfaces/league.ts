@@ -15,18 +15,17 @@ export interface IBELeague extends ICommonLeagueFields {
   welcome_note: string
 }
 
-export interface IBECreateLeagueBody extends Omit<IBELeague, 'id' | 'updated_at' | 'created_at'> {}
+export interface IBECreateLeagueBody extends Omit<IBELeague, 'id' | 'updated_at' | 'created_at' | 'payoffs_teams'> {}
 
 export interface IFELeague extends ICommonLeagueFields {
-  type: string
+  type: number
   updatedAt: string
   createdAt: string
-  playoffFormat: string
-  standingsFormat: string
-  tiebreakersFormat: string
+  playoffFormat: number
+  standingsFormat: number
+  tiebreakersFormat: number
   payoffsTeams: number
   welcomeNote: string
 }
 
-export interface IFECreateLeagueBody extends Omit<IFELeague, 'id' | 'updatedAt' | 'createdAt'> {}
-
+export interface IFECreateLeagueBody extends Omit<IFELeague, 'id' | 'updatedAt' | 'createdAt' | 'payoffsTeams'> {}

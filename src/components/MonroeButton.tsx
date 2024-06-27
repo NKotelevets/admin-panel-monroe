@@ -7,10 +7,12 @@ interface IMonroeButtonProps {
   type: 'link' | 'text' | 'primary' | 'default' | 'dashed' | undefined
   onClick?: () => void
   htmlType?: 'button' | 'submit' | 'reset'
+  className?: string
 }
 
-const MonroeButton: FC<IMonroeButtonProps> = ({ isDisabled, label, onClick, type, htmlType = 'button' }) => (
+const MonroeButton: FC<IMonroeButtonProps> = ({ isDisabled, label, onClick, type, htmlType = 'button', className }) => (
   <Button
+    className={className}
     style={{
       border: 0,
       height: '40px',

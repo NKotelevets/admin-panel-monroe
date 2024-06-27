@@ -22,3 +22,23 @@
   margin-top: 10px !important;
   padding: 0 !important;
 }
+
+::-webkit-scrollbar {
+  width: 4px;
+  border-radius: 12px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 40px;
+  border: 0.5px solid rgba(26, 22, 87, 0.40);
+  background: rgba(26, 22, 87, 0.30);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #606671;
+}

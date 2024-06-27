@@ -3,6 +3,7 @@ export const PATH_TO_SIGN_IN_PAGE = '/sign-in'
 export const PATH_TO_HOME = '/'
 
 export const PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE = '/leagues-and-tournaments'
+export const PATH_TO_CREATE_LEAGUE_TOURNAMENT = '/leagues-and-tournaments/create'
 export const PATH_TO_USERS_PAGE = '/users'
 export const PATH_TO_MASTER_TEAMS_PAGE = '/master-teams'
 export const PATH_TO_LEAGUE_TEAMS_PAGE = '/league-teams'
@@ -27,4 +28,3 @@ export const PROTECTED_PAGES = [
 ]
 
 export const AUTH_PAGES = [PATH_TO_SIGN_IN_PAGE]
-

@@ -19,3 +19,26 @@
   width: 16px;
   height: 16px;
 }
+
+.input-label {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: rgba(26, 22, 87, 0.85) !important;
+}
+
+.input-error {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: #BC261B !important;
+}
+
+@media (width > 1660px) {
+  .input {
+    font-size: 22px !important;
+  }
+
+  .input-error,
+  .input-label {
+    font-size: 20px !important;
+  }
+}
