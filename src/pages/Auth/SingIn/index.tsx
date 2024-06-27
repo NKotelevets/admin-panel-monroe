@@ -1,4 +1,4 @@
-import { Checkbox, Flex, Tooltip, Typography } from 'antd'
+import { Checkbox, Flex, Typography } from 'antd'
 import { Form, Formik } from 'formik'
 import { useState } from 'react'
 import { Helmet } from 'react-helmet'
@@ -9,6 +9,7 @@ import * as Yup from 'yup'
 import MonroeInput from '@/components/Inputs/MonroeInput'
 import MonroePasswordInput from '@/components/Inputs/MonroePasswordInput'
 import MonroeButton from '@/components/MonroeButton'
+import MonroeTooltip from '@/components/MonroeTooltip'
 
 import AuthLayout from '@/layouts/AuthLayout'
 
@@ -19,7 +20,7 @@ import { useCookies } from '@/hooks/useCookies'
 
 import { AUTH_PAGES, PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE } from '@/constants/paths'
 
-import './sign-in.styles.css'
+import classnames from './sign-in.module.css'
 
 import LogotypeIcon from '@/assets/icons/logotype.svg'
 
@@ -75,33 +76,15 @@ const SignIn = () => {
             return (
               <Flex align="center" justify="center" flex="1 1 auto" style={{ width: '400px' }}>
                 <Form onSubmit={handleSubmit}>
-                  <Flex vertical className="wrapper" style={{ width: '360px' }} justify="flex-start">
-                    <ReactSVG src={LogotypeIcon} />
+                  <Flex vertical className={classnames.wrapper} style={{ width: '360px' }} justify="flex-start">
+                    <ReactSVG className={classnames['logotype-icon']} src={LogotypeIcon} />
 
                     <Flex vertical style={{ margin: '32px 0 24px' }}>
-                      <Typography.Title
-                        className="title"
-                        level={1}
-                        style={{
-                          color: '#1A1657',
-                          fontSize: '30px',
-                          fontWeight: 500,
-                          margin: 0,
-                        }}
-                      >
+                      <Typography.Title className={classnames.title} level={1}>
                         Welcome back!
                       </Typography.Title>
 
-                      <Typography.Title
-                        className="subtitle"
-                        level={5}
-                        style={{
-                          color: 'rgba(26, 22, 87, 0.85)',
-                          fontSize: '14px',
-                          fontWeight: 400,
-                          margin: 0,
-                        }}
-                      >
+                      <Typography.Title className={classnames.subtitle} level={5}>
                         Please enter your details
                       </Typography.Title>
                     </Flex>
@@ -128,38 +111,34 @@ const SignIn = () => {
 
                     <Flex vertical={false} justify="space-between" style={{ marginBottom: '40px', cursor: 'pointer' }}>
                       <Flex vertical={false} align="center">
-                        <Checkbox
-                          className="custom-checkbox"
-                          checked={isStaySignedIn}
-                          onChange={() => setIsStaySignedIn((prev) => !prev)}
-                        />
+                        <Checkbox checked={isStaySignedIn} onChange={() => setIsStaySignedIn((prev) => !prev)} />
 
-                        <Typography.Text
-                          className="checkbox-text"
-                          style={{
-                            color: 'rgba(26, 22, 87, 0.85)',
-                            marginLeft: '8px',
-                          }}
-                        >
-                          Stay signed in
-                        </Typography.Text>
+                        <Typography.Text className={classnames['checkbox-text']}>Stay signed in</Typography.Text>
                       </Flex>
 
-                      <Tooltip
-                        overlayClassName="forgot-password-tooltip"
-                        placement="top"
-                        title="In order to recover your password, please go to Swift Schedule's mobile app"
-                        color="#62636D"
+                      <MonroeTooltip
+                        width="300px"
+                        text="In order to recover your password, please go to Swift Schedule's mobile app"
                       >
-                        <Typography.Text className="forgot-password">Forgot password</Typography.Text>
-                      </Tooltip>
+                        <Typography.Text className={classnames['forgot-password']}>Forgot password</Typography.Text>
+                      </MonroeTooltip>
                     </Flex>
 
-                    <Tooltip placement="top" title={errors.email ? 'Email is not valid' : ''} color="#62636D">
-                      <Flex flex="1 1 auto" style={{ width: '100%' }}>
-                        <MonroeButton label="Sign in" isDisabled={!isDisabledButton} type="primary" htmlType="submit" />
-                      </Flex>
-                    </Tooltip>
+                    <Flex flex="1 1 auto" style={{ width: '100%' }} justify="center">
+                      <MonroeTooltip
+                        width="128px"
+                        containerWidth="100%"
+                        text={errors.email ? 'Email is not valid' : ''}
+                      >
+                        <MonroeButton
+                          className={classnames['sign-in-button']}
+                          label="Sign in"
+                          isDisabled={!isDisabledButton}
+                          type="primary"
+                          htmlType="submit"
+                        />
+                      </MonroeTooltip>
+                    </Flex>
                   </Flex>
                 </Form>
               </Flex>

@@ -1,22 +1,40 @@
-.custom-checkbox .ant-checkbox-inner {
+.title {
+  color: #1A1657 !important;
+  font-size: 30px;
+  font-weight: 500;
+  margin: 0 !important;
+}
+
+.subtitle {
+  color: rgba(26, 22, 87, 0.85) !important;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0 !important;
+}
+
+.ant-checkbox-inner {
   border-radius: 2px;
   height: 16px;
   width: 16px;
 }
 
-.custom-checkbox .ant-checkbox .ant-checkbox-inner {
+.ant-checkbox .ant-checkbox-inner {
   border-color: #D8D9DB !important;
 }
 
-.custom-checkbox:hover .ant-checkbox .ant-checkbox-inner,
-.custom-checkbox .ant-checkbox:hover .ant-checkbox-inner {
+.ant-checkbox:hover .ant-checkbox-inner {
   border-color: #3E34CA;
 }
 
-.custom-checkbox .ant-checkbox-checked .ant-checkbox-inner,
+.ant-checkbox-checked .ant-checkbox-inner,
 .ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
   border-color: #3E34CA;
   background-color: #3E34CA;
+}
+
+.checkbox-text {
+  color: rgba(26, 22, 87, 0.85) !important;
+  margin-left: 8px
 }
 
 .forgot-password-tooltip {

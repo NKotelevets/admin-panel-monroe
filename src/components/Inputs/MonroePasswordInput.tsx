@@ -1,32 +1,29 @@
-import { Input, Typography } from 'antd'
+import { Flex, Input, Typography } from 'antd'
 import { ChangeEventHandler, FC } from 'react'
 
-import '../monroe-input.style.css'
+import './monroe-input.style.css'
 
-interface IMonroeInputProps {
+interface IMonroePasswordInputProps {
   label: string
   placeholder: string
   value: string
   onChange: ChangeEventHandler<HTMLInputElement>
   name: string
+  labelClasses?: string
 }
 
-const MonroeInput: FC<IMonroeInputProps> = ({ label, ...rest }) => (
+const MonroePasswordInput: FC<IMonroePasswordInputProps> = ({ label, labelClasses, ...rest }) => (
   <>
-    <Typography.Title
-      level={4}
-      style={{
-        fontSize: '14px',
-        fontWeight: 400,
-        color: 'rgba(26, 22, 87, 0.85)',
-      }}
-    >
-      {label}
-    </Typography.Title>
+    {label && (
+      <Flex vertical={false} justify="space-between" align="center">
+        <Typography.Title className={`input-label ${labelClasses}`} level={4}>
+          {label}
+        </Typography.Title>
+      </Flex>
+    )}
 
     <Input.Password className="input" {...rest} />
   </>
 )
 
-export default MonroeInput
-
+export default MonroePasswordInput
