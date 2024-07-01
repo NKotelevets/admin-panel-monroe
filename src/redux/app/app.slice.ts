@@ -1,55 +1,58 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 import { authApi } from '@/redux/auth/auth.api'
 import { leaguesApi } from '@/redux/leagues/leagues.api'
 import { userApi } from '@/redux/user/user.api'
 
-import { IDetailedError } from '@/common/interfaces'
+import { IDetailedError, INamedDetailsError } from '@/common/interfaces'
 
-interface IAppError {
+interface IAppNotification {
   message: string
   timestamp: number
+  type: 'success' | 'error' | 'info'
 }
 
 interface IAppSliceState {
-  error: IAppError
+  notification: IAppNotification
 }
 
-const EMPTY_ERROR: IAppError = {
+const EMPTY_NOTIFICATION: IAppNotification = {
   message: '',
   timestamp: 0,
+  type: 'error',
 }
 
 const authSliceState: IAppSliceState = {
-  error: EMPTY_ERROR,
+  notification: EMPTY_NOTIFICATION,
 }
 
 export const appSlice = createSlice({
   name: 'appSlice',
   initialState: authSliceState,
   reducers: {
-    cleanError: (state) => {
-      state.error = EMPTY_ERROR
+    clearNotification: (state) => {
+      state.notification = EMPTY_NOTIFICATION
+    },
+    setAppNotification: (state, action: PayloadAction<IAppNotification>) => {
+      state.notification = action.payload
     },
   },
   extraReducers: (builder) =>
     builder
       .addMatcher(userApi.endpoints.getUser.matchRejected, (state, action) => {
-        state.error.message = (action.payload?.data as IDetailedError).details
-        state.error.timestamp = new Date().getTime()
+        state.notification.message = (action.payload?.data as IDetailedError).details
+        state.notification.timestamp = new Date().getTime()
       })
       .addMatcher(authApi.endpoints.signIn.matchRejected, (state) => {
-        state.error.message = 'Invalid Email/Password'
-        state.error.timestamp = new Date().getTime()
+        state.notification.message = 'Invalid Email/Password'
+        state.notification.timestamp = new Date().getTime()
       })
       .addMatcher(leaguesApi.endpoints.createLeague.matchRejected, (state, action) => {
-        state.error.message = (action.payload?.data as IDetailedError).details
-        state.error.timestamp = new Date().getTime()
+        state.notification.message = (action.payload?.data as INamedDetailsError).details.name[0]
+        state.notification.timestamp = new Date().getTime()
       })
       .addMatcher(leaguesApi.endpoints.deleteLeague.matchRejected, (state, action) => {
-        state.error.message = (action.payload?.data as IDetailedError).details
-        state.error.timestamp = new Date().getTime()
+        state.notification.message = (action.payload?.data as IDetailedError).details
+        state.notification.timestamp = new Date().getTime()
       }),
 })
-
-export const { cleanError } = appSlice.actions

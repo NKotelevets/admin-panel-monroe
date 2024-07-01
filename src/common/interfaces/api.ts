@@ -5,3 +5,7 @@ export interface IPaginationResponse<T> {
   results: T
 }
 
+export interface IDeleteResponse {
+  code: string
+  details: string
+}

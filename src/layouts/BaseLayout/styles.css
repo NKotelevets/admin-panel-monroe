@@ -44,3 +44,13 @@
 .ant-menu-item-selected .ant-menu-title-content {
   color: #BC261B !important
 }
+
+.company-menu .ant-menu-submenu-arrow::before,
+.company-menu .ant-menu-submenu-arrow::after {
+  right: -9px;
+}
+
+.items-menu .ant-menu-submenu-arrow {
+  right: 24px;
+
+}

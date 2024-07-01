@@ -150,7 +150,7 @@ const MonroeSidebar = () => {
 
   return (
     <Sider width="256px" style={siderStyle}>
-      <Flex style={{ padding: '0 24px' }}>
+      <Flex style={{ padding: '0 15px' }}>
         <Menu
           className="company-menu"
           style={{
@@ -178,4 +178,3 @@ const MonroeSidebar = () => {
 }
 
 export default MonroeSidebar
-
