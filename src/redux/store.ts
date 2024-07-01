@@ -30,7 +30,7 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage,
-  whitelist: ['authSlice', 'appSlice', 'userSlice'],
+  whitelist: ['authSlice', 'appSlice', 'userSlice', 'leaguesSlice'],
 }
 
 const rootReducer = combineReducers({
@@ -59,4 +59,3 @@ export type TAppDispatch = typeof store.dispatch
 export const persistor = persistStore(store)
 
 export default store
-

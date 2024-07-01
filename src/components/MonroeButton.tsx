@@ -1,5 +1,5 @@
 import { Button } from 'antd'
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 
 interface IMonroeButtonProps {
   label: string
@@ -8,9 +8,20 @@ interface IMonroeButtonProps {
   onClick?: () => void
   htmlType?: 'button' | 'submit' | 'reset'
   className?: string
+  icon?: ReactNode
+  iconPosition?: 'start' | 'end' | undefined
 }
 
-const MonroeButton: FC<IMonroeButtonProps> = ({ isDisabled, label, onClick, type, htmlType = 'button', className }) => (
+const MonroeButton: FC<IMonroeButtonProps> = ({
+  isDisabled,
+  label,
+  onClick,
+  type,
+  htmlType = 'button',
+  className,
+  icon,
+  iconPosition,
+}) => (
   <Button
     className={className}
     style={{
@@ -23,6 +34,8 @@ const MonroeButton: FC<IMonroeButtonProps> = ({ isDisabled, label, onClick, type
     onClick={onClick}
     disabled={isDisabled}
     htmlType={htmlType}
+    icon={icon}
+    iconPosition={iconPosition}
   >
     {label}
   </Button>

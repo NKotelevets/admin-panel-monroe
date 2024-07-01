@@ -17,15 +17,29 @@ export interface IBELeague extends ICommonLeagueFields {
 
 export interface IBECreateLeagueBody extends Omit<IBELeague, 'id' | 'updated_at' | 'created_at' | 'payoffs_teams'> {}
 
+type TWinningPoints = 'Winning %' | 'Points'
+
+type TPlayOffFormat = 'Best Record Wins' | 'Single Elimination Bracket'
+
+type TLeagueTourn = 'League' | 'Tourn'
+
 export interface IFELeague extends ICommonLeagueFields {
-  type: number
   updatedAt: string
   createdAt: string
+  welcomeNote: string
+  type: TLeagueTourn
+  playoffFormat: TPlayOffFormat
+  standingsFormat: TWinningPoints
+  tiebreakersFormat: TWinningPoints
+  payoffsTeams: number
+}
+
+export interface IFECreateLeagueBody {
+  welcomeNote: string
+  type: number
   playoffFormat: number
   standingsFormat: number
   tiebreakersFormat: number
-  payoffsTeams: number
-  welcomeNote: string
+  name: string
+  description: string
 }
-
-export interface IFECreateLeagueBody extends Omit<IFELeague, 'id' | 'updatedAt' | 'createdAt' | 'payoffsTeams'> {}

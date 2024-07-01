@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 import { authApi } from '@/redux/auth/auth.api'
+import { leaguesApi } from '@/redux/leagues/leagues.api'
 import { userApi } from '@/redux/user/user.api'
 
 import { IDetailedError } from '@/common/interfaces'
@@ -39,6 +40,14 @@ export const appSlice = createSlice({
       })
       .addMatcher(authApi.endpoints.signIn.matchRejected, (state) => {
         state.error.message = 'Invalid Email/Password'
+        state.error.timestamp = new Date().getTime()
+      })
+      .addMatcher(leaguesApi.endpoints.createLeague.matchRejected, (state, action) => {
+        state.error.message = (action.payload?.data as IDetailedError).details
+        state.error.timestamp = new Date().getTime()
+      })
+      .addMatcher(leaguesApi.endpoints.deleteLeague.matchRejected, (state, action) => {
+        state.error.message = (action.payload?.data as IDetailedError).details
         state.error.timestamp = new Date().getTime()
       }),
 })
