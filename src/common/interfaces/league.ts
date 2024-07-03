@@ -1,3 +1,7 @@
+import { IIdName } from './index'
+
+import { IBESeason } from '@/common/interfaces/season'
+
 interface ICommonLeagueFields {
   id: string
   name: string
@@ -11,11 +15,12 @@ export interface IBELeague extends ICommonLeagueFields {
   playoff_format: number
   standings_format: number
   tiebreakers_format: number
-  payoffs_teams: number
+  playoffs_teams: number
   welcome_note: string
+  league_seasons: IBESeason[]
 }
 
-export interface IBECreateLeagueBody extends Omit<IBELeague, 'id' | 'updated_at' | 'created_at' | 'payoffs_teams'> {}
+export interface IBECreateLeagueBody extends Omit<IBELeague, 'id' | 'updated_at' | 'created_at' | 'league_seasons'> {}
 
 type TWinningPoints = 'Winning %' | 'Points'
 
@@ -31,7 +36,8 @@ export interface IFELeague extends ICommonLeagueFields {
   playoffFormat: TPlayOffFormat
   standingsFormat: TWinningPoints
   tiebreakersFormat: TWinningPoints
-  payoffsTeams: number
+  playoffsTeams: number
+  seasons: IIdName[]
 }
 
 export interface IFECreateLeagueBody {
@@ -42,4 +48,60 @@ export interface IFECreateLeagueBody {
   tiebreakersFormat: number
   name: string
   description: string
+  playoffsTeams: number
+}
+
+interface IImportLeagueSuccess {
+  name: string
+}
+
+interface IImportLeagueError {
+  index: number
+  error: string
+}
+
+interface IImportLeagueDuplicatesExisting {
+  id: string
+  updated_at: string
+  created_at: string
+  type: number
+  playoff_format: number
+  standings_format: number
+  tiebreakers_format: number
+  name: string
+  description: string
+  welcome_note: string
+  playoffs_teams: number
+}
+
+interface ILeagueChanges extends Omit<IBELeague, 'id' | 'updated_at' | 'created_at'> {}
+
+interface IImportLeagueDuplicates {
+  index: number
+  existing: IImportLeagueDuplicatesExisting[]
+  new: Partial<ILeagueChanges>
+  differences: Partial<ILeagueChanges>
+}
+
+export interface IImportLeagueResponse {
+  status: ''
+  success: IImportLeagueSuccess[]
+  errors: IImportLeagueError[]
+  duplicates: IImportLeagueDuplicates[]
+}
+
+export interface IGetLeaguesRequestParams {
+  limit: number
+  offset: number
+  league_name?: string | undefined
+  playoff_format?: string | undefined
+  standings_format?: string | undefined
+  tiebreakers_format?: string | undefined
+  type?: string | undefined
+  order_by?: string
+}
+
+export interface IGetLeaguesResponse {
+  count: number
+  leagues: IFELeague[]
 }

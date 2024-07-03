@@ -9,3 +9,8 @@ export interface INamedDetailsError {
     name: string[]
   }
 }
+
+export interface IIdName {
+  id: string
+  name: string
+}

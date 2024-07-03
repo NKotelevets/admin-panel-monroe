@@ -1,7 +1,7 @@
 import { SearchOutlined } from '@ant-design/icons'
 import type { GetProp, InputRef, TableColumnType, TableProps } from 'antd'
 import { Button, Flex, Input, Table, Tooltip, Typography } from 'antd'
-import type { FilterDropdownProps, SorterResult } from 'antd/es/table/interface'
+import type { FilterDropdownProps, FilterValue, SorterResult } from 'antd/es/table/interface'
 import { Dispatch, FC, SetStateAction, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ReactSVG } from 'react-svg'
@@ -41,7 +41,18 @@ interface ILeagueAndTournamentsTableProps {
   setShowAdditionalHeader: Dispatch<SetStateAction<boolean>>
   isDeleteAllRecords: boolean
   setIsDeleteAllRecords: Dispatch<SetStateAction<boolean>>
+  showCreatedRecords: boolean
 }
+
+const showTotal = (total: number) => (
+  <Typography.Text
+    style={{
+      color: 'rgba(26, 22, 87) !important',
+    }}
+  >
+    Total {total} items
+  </Typography.Text>
+)
 
 const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
   setSelectedRecordsIds,
@@ -50,9 +61,34 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
   showAdditionalHeader,
   setIsDeleteAllRecords,
   isDeleteAllRecords,
+  showCreatedRecords,
 }) => {
-  const { setPaginationParams, limit, offset, total, leagues } = useLeagueSlice()
-  const { isLoading, data } = useGetLeaguesQuery({ limit, offset: limit * offset }, { refetchOnMountOrArgChange: true })
+  const {
+    setPaginationParams,
+    limit,
+    offset,
+    total,
+    leagues,
+    league_name,
+    playoff_format,
+    standings_format,
+    tiebreakers_format,
+    type,
+    order_by,
+  } = useLeagueSlice()
+  const { isLoading, isFetching, data } = useGetLeaguesQuery(
+    {
+      limit,
+      offset: limit * offset,
+      league_name: league_name ? league_name : undefined,
+      playoff_format: playoff_format ? playoff_format : undefined,
+      standings_format: standings_format ? standings_format : undefined,
+      tiebreakers_format: tiebreakers_format ? tiebreakers_format : undefined,
+      type: type ? type : undefined,
+      order_by,
+    },
+    { refetchOnMountOrArgChange: true },
+  )
   const searchInput = useRef<InputRef>(null)
   const [tableParams, setTableParams] = useState<ITableParams>({
     pagination: {
@@ -62,6 +98,7 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
       showQuickJumper: true,
       showSizeChanger: true,
       total: data?.count,
+      showTotal,
     },
   })
   const [showDeleteSingleRecordModal, setShowDeleteSingleRecordModal] = useState(false)
@@ -143,11 +180,13 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
       onFilter: (value, record) => record.name.startsWith(value as string),
       fixed: 'left',
       width: '20vw',
+      sortOrder: order_by === 'asc' ? 'ascend' : 'descend',
       ...getColumnSearchProps('name'),
       render: (value, record) => (
         <Typography.Text
           style={{
             color: '#3E34CA',
+            cursor: 'pointer',
           }}
           onClick={() => navigate(PATH_TO_LEAGUE_TOURNAMENT_PAGE + '/' + record.id)}
         >
@@ -159,9 +198,9 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
       title: 'Type',
       dataIndex: 'type',
       filters: [
-        { text: 'All', value: 'all' },
-        { text: 'League', value: 'league' },
-        { text: 'Tourn', value: 'tourn' },
+        { text: 'All', value: '' },
+        { text: 'League', value: 0 },
+        { text: 'Tourn', value: 1 },
       ],
       width: '112px',
       render: (value) => <TagType text={value} />,
@@ -171,9 +210,9 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
       dataIndex: 'playoffFormat',
       width: '220px',
       filters: [
-        { text: 'All', value: 'all' },
-        { text: 'Best Record Wins', value: 'best-record-wins' },
-        { text: 'Single Elimination Bracket', value: 'single-elimination-bracket' },
+        { text: 'All', value: '' },
+        { text: 'Best Record Wins', value: 0 },
+        { text: 'Single Elimination Bracket', value: 1 },
       ],
       render: (value) => (
         <Typography.Text
@@ -190,9 +229,9 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
       dataIndex: 'standingsFormat',
       width: '225px',
       filters: [
-        { text: 'All', value: 'all' },
-        { text: 'Points', value: 'points' },
-        { text: 'Winning %', value: 'winning' },
+        { text: 'All', value: '' },
+        { text: 'Points', value: 0 },
+        { text: 'Winning %', value: 1 },
       ],
       render: (value) => (
         <Typography.Text
@@ -209,9 +248,9 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
       dataIndex: 'tiebreakersFormat',
       width: '235px',
       filters: [
-        { text: 'All', value: 'all' },
-        { text: 'Points', value: 'points' },
-        { text: 'Winning %', value: 'winning' },
+        { text: 'All', value: '' },
+        { text: 'Points', value: 0 },
+        { text: 'Winning %', value: 1 },
       ],
       render: (value) => (
         <Typography.Text
@@ -322,9 +361,16 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
     },
   ]
 
-  const handleTableChange: TableProps['onChange'] = (pagination, filters, sorter) => {
+  type TFilterValueKey = 'name' | 'playoffFormat' | 'standingsFormat' | 'tiebreakersFormat' | 'type'
+
+  type TFilters = Record<TFilterValueKey, FilterValue | null>
+
+  const handleTableChange: TableProps['onChange'] = (pagination, filters: TFilters, sorter) => {
     setTableParams({
-      pagination,
+      pagination: {
+        ...pagination,
+        showTotal,
+      },
       filters,
       sortOrder: Array.isArray(sorter) ? undefined : sorter.order,
       sortField: Array.isArray(sorter) ? undefined : sorter.field,
@@ -333,6 +379,12 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
     setPaginationParams({
       offset: (pagination?.current && pagination?.current - 1) || 0,
       limit: pagination?.pageSize || 10,
+      league_name: (filters?.['name']?.[0] as string) || '',
+      playoff_format: (filters?.['playoffFormat']?.[0] as string) || '',
+      standings_format: (filters?.['standingsFormat']?.[0] as string) || '',
+      tiebreakers_format: (filters?.['tiebreakersFormat']?.[0] as string) || '',
+      type: (filters?.['type']?.[0] as string) || '',
+      order_by: !Array.isArray(sorter) && sorter.order === 'descend' ? 'desc' : 'asc',
     })
   }
 
@@ -344,10 +396,18 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
         pagination: {
           ...params.pagination,
           total: data.count,
+          showTotal,
         },
       }))
     }
+
+    if (isDeleteAllRecords && data?.leagues.length) {
+      const recordIds = data?.leagues.map((league) => league.id)
+      setSelectedRecordsIds((prev) => [...prev, ...recordIds])
+    }
   }, [data])
+
+  const MOCKED_CREATED_LEAGUES_NAMES = ['For spring', 'Toyota 99', '12dsewqdewde']
 
   return (
     <>
@@ -375,10 +435,12 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
               marginRight: '10px',
             }}
           >
-            {isDeleteAllRecords ? `All ${total} events are selected` : `All ${limit} events on this page are selected.`}
+            {isDeleteAllRecords
+              ? `All ${total} records are selected.`
+              : `All ${limit} records on this page are selected.`}
           </p>
 
-          {!isDeleteAllRecords && (
+          {!isDeleteAllRecords ? (
             <p
               style={{
                 color: '#3E34CA',
@@ -386,7 +448,21 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
               }}
               onClick={() => setIsDeleteAllRecords(true)}
             >
-              Select all {total - limit} events in Leagues and Tournaments instead.
+              Select all {total} records in Leagues and Tournaments instead.
+            </p>
+          ) : (
+            <p
+              style={{
+                color: '#3E34CA',
+                fontSize: '14px',
+              }}
+              onClick={() => {
+                setIsDeleteAllRecords(false)
+                setSelectedRecordsIds([])
+                setShowAdditionalHeader(false)
+              }}
+            >
+              Unselect all records
             </p>
           )}
         </div>
@@ -397,20 +473,18 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
         rowKey={(record) => record.id}
         dataSource={leagues}
         pagination={tableParams.pagination}
-        loading={isLoading}
+        loading={isLoading || isFetching}
         onChange={handleTableChange}
+        rowClassName={(record) =>
+          showCreatedRecords && MOCKED_CREATED_LEAGUES_NAMES.includes(record.name) ? 'highlighted-row' : ''
+        }
         rowSelection={{
           type: 'checkbox',
           selectedRowKeys: selectedRecordIds,
           onChange: (selected) => {
             if (selected.length === limit) setShowAdditionalHeader(true)
 
-            if (selected.length !== limit) {
-              setIsDeleteAllRecords(false)
-              setShowAdditionalHeader(false)
-            }
-
-            setSelectedRecordsIds(selected as string[])
+            if (!isDeleteAllRecords) setSelectedRecordsIds(selected as string[])
           },
         }}
         scroll={{

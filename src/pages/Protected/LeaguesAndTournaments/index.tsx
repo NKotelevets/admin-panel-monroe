@@ -1,21 +1,36 @@
 import { DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons'
 import { Button, Flex, Typography } from 'antd'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { useNavigate } from 'react-router-dom'
 
 import LeagueAndTournamentsTable from '@/pages/Protected/LeaguesAndTournaments/components/LeagueAndTournamentsTable'
 
+// import ImportModal from '@/components/ImportTooltip'
 import MonroeButton from '@/components/MonroeButton'
 import MonroeModal from '@/components/MonroeModal'
 
 import BaseLayout from '@/layouts/BaseLayout'
 
-// import { useAppSlice } from '@/redux/hooks/useAppSlice'
 import { useLeagueSlice } from '@/redux/hooks/useLeagueSlice'
 
+// import { useImportLeaguesMutation } from '@/redux/leagues/leagues.api'
+// import { useCookies } from '@/hooks/useCookies'
 // import { useBulkDeleteMutation, useDeleteAllMutation } from '@/redux/leagues/leagues.api'
-import { PATH_TO_CREATE_LEAGUE_TOURNAMENT } from '@/constants/paths'
+import {
+  PATH_TO_CREATE_LEAGUE_TOURNAMENT, //  PATH_TO_LEAGUE_TOURNAMENT_IMPORT_INFO
+} from '@/constants/paths'
+
+// const readFileToBase64 = (file: File): Promise<string> => {
+//   return new Promise((resolve, reject) => {
+//     const reader = new FileReader()
+
+//     reader.onload = (event) => resolve(event!.target.result as string)
+//     reader.onerror = (error) => reject(error)
+
+//     reader.readAsDataURL(file)
+//   })
+// }
 
 const LeaguesAndTournaments = () => {
   const navigate = useNavigate()
@@ -28,6 +43,11 @@ const LeaguesAndTournaments = () => {
   // const [deleteAll] = useDeleteAllMutation()
   // const [bulkDelete] = useBulkDeleteMutation()
   // const { setAppNotification } = useAppSlice()
+  const inputRefForSmallScreens = useRef<HTMLInputElement | null>()
+  // const [importLeagues] = useImportLeaguesMutation()
+  // const { cookies } = useCookies()
+  const leagueTournText = deleteRecordsModalCount > 1 ? 'leagues/tournaments' : 'league/tournament'
+  const [showCreatedRecords] = useState(false)
 
   const goToCreateLeagueTournamentPage = () => navigate(PATH_TO_CREATE_LEAGUE_TOURNAMENT)
 
@@ -52,22 +72,57 @@ const LeaguesAndTournaments = () => {
     // }
   }
 
+  // const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0]
+
+  //   if (file) {
+  //     const base64 = await readFileToBase64(file)
+
+  //     console.log({ base64 })
+
+  //     fetch('https://cp.swiftschedule.net/api/v1/teams/leagues/import-leagues', {
+  //       method: 'POST',
+  //       headers: {
+  //         authorization: `Bearer ${cookies.accessToken}`,
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: {
+  //         file: base64,
+  //       },
+  //     })
+  //       .then((response) => console.log({ response }))
+  //       .catch((error) => console.error(error))
+  //   }
+  // }
+
   return (
     <>
       <Helmet>
         <title>Admin Panel | Leagues and Tournaments</title>
       </Helmet>
 
+      {/* <ImportModal
+        title="Importing"
+        filename="Doc2.csv"
+        status="warning"
+        // errorMessage="Missing data for name in the file"
+        showInList={() => setShowCreatedRecords(true)}
+        redirectToImportInfo={() => navigate(PATH_TO_LEAGUE_TOURNAMENT_IMPORT_INFO)}
+      /> */}
+
       {isOpenModal && (
         <MonroeModal
           onCancel={handleCloseModal}
           okText="Delete"
           onOk={handleDelete}
-          title={`Delete ${deleteRecordsModalCount} leagues/tournaments?`}
+          title={`Delete ${deleteRecordsModalCount > 1 ? deleteRecordsModalCount : ''} ${leagueTournText}?`}
           type="warn"
           content={
             <>
-              <p>Are you sure you want to delete {deleteRecordsModalCount} leagues/tournaments?</p>
+              <p>
+                Are you sure you want to delete {deleteRecordsModalCount > 1 ? deleteRecordsModalCount : ''}
+                {leagueTournText}?
+              </p>
             </>
           }
         />
@@ -113,9 +168,28 @@ const LeaguesAndTournaments = () => {
                 />
               )}
 
-              <Button className="import-button" icon={<UploadOutlined />} iconPosition="start" type="default">
+              <Button
+                className="import-button"
+                icon={<UploadOutlined />}
+                iconPosition="start"
+                type="default"
+                onClick={() => {
+                  inputRefForSmallScreens.current?.click()
+                }}
+              >
                 Import CSV
               </Button>
+
+              <input
+                ref={(ref) => {
+                  inputRefForSmallScreens.current = ref
+                }}
+                type="file"
+                name="leagues"
+                accept=".csv"
+                onChange={() => {}}
+                style={{ display: 'none' }}
+              />
 
               <Button
                 icon={<PlusOutlined />}
@@ -139,6 +213,7 @@ const LeaguesAndTournaments = () => {
 
           <Flex flex="1 1 auto" vertical>
             <LeagueAndTournamentsTable
+              showCreatedRecords={showCreatedRecords}
               isDeleteAllRecords={isDeleteAllRecords}
               setSelectedRecordsIds={setSelectedRecordsIds}
               selectedRecordIds={selectedRecordsIds}

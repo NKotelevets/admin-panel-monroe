@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ReactSVG } from 'react-svg'
 
+import { PLAYOFFS_TEAMS_OPTIONS } from '@/pages/Protected/LeaguesAndTournaments/constants'
 import { validationSchema } from '@/pages/Protected/LeaguesAndTournaments/constants/formik'
 import {
   DEFAULT_STANDING_FORMAT_POINTS_TOOLTIP,
@@ -17,6 +18,7 @@ import {
 import MonroeInput from '@/components/Inputs/MonroeInput'
 import MonroeTextarea from '@/components/Inputs/MonroeTextarea'
 import MonroeButton from '@/components/MonroeButton'
+import MonroeSelect from '@/components/MonroeSelect'
 import MonroeTooltip from '@/components/MonroeTooltip'
 
 import BaseLayout from '@/layouts/BaseLayout'
@@ -37,6 +39,16 @@ const Edit = () => {
   const params = useParams<{ id: string }>()
   const leagueId = params.id || ''
   const { data, isError, isLoading } = useGetLeagueQuery(leagueId, { skip: !leagueId })
+  const initialFormValues: IFECreateLeagueBody = {
+    description: data?.description || '',
+    name: data?.name || '',
+    playoffFormat: (data?.playoffFormat === 'Best Record Wins' ? 0 : 1) || 0,
+    standingsFormat: data?.standingsFormat === 'Winning %' ? 0 : 1 || 0,
+    tiebreakersFormat: data?.tiebreakersFormat === 'Winning %' ? 0 : 1 || 0,
+    type: data?.type === 'League' ? 0 : 1 || 0,
+    welcomeNote: data?.welcomeNote || '',
+    playoffsTeams: data?.playoffsTeams || 0,
+  }
 
   const BREAD_CRUMB_ITEMS = [
     {
@@ -62,7 +74,7 @@ const Edit = () => {
     standingsFormat,
     tiebreakersFormat,
     welcomeNote,
-    payoffsTeams,
+    playoffsTeams,
     ...rest
   }: IFECreateLeagueBody) =>
     updateLeague({
@@ -72,7 +84,7 @@ const Edit = () => {
         standings_format: standingsFormat,
         tiebreakers_format: tiebreakersFormat,
         welcome_note: welcomeNote,
-        payoffs_teams: payoffsTeams,
+        playoffs_teams: playoffsTeams,
         ...rest,
       },
     })
@@ -99,17 +111,6 @@ const Edit = () => {
 
   if (!data && isLoading) return <h2>Loading..</h2>
 
-  const initialFormValues: IFECreateLeagueBody = {
-    description: data?.description || '',
-    name: data?.name || '',
-    playoffFormat: (data?.playoffFormat === 'Best Record Wins' ? 0 : 1) || 0,
-    standingsFormat: data?.standingsFormat === 'Winning %' ? 0 : 1 || 0,
-    tiebreakersFormat: data?.tiebreakersFormat === 'Winning %' ? 0 : 1 || 0,
-    type: data?.type === 'League' ? 0 : 1 || 0,
-    welcomeNote: data?.welcomeNote || '',
-    payoffsTeams: data?.payoffsTeams || 0,
-  }
-
   return (
     <BaseLayout>
       <>
@@ -126,7 +127,7 @@ const Edit = () => {
 
           <div className="content">
             <Formik initialValues={initialFormValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
-              {({ values, handleChange, errors, handleSubmit }) => {
+              {({ values, handleChange, errors, handleSubmit, setFieldValue }) => {
                 const isEnabledButton = Object.keys(errors).length === 0 && values.name
 
                 return (
@@ -203,23 +204,22 @@ const Edit = () => {
                           </Radio.Group>
 
                           {values.playoffFormat === 1 && (
-                            <Flex>
+                            <Flex align="center" style={{ marginBottom: '48px' }}>
                               <Typography.Text
                                 style={{
                                   color: 'rgba(26, 22, 87, 1)',
                                   fontWeight: 500,
+                                  marginRight: '8px',
                                 }}
                               >
                                 # playoffs' teams:{' '}
                               </Typography.Text>
 
-                              <MonroeInput
-                                inputClasses="playoff-team"
-                                name="payoffsTeams"
-                                onChange={(event) => {
-                                  if (+event.target.value) handleChange(event)
-                                }}
-                                value={values.payoffsTeams}
+                              <MonroeSelect
+                                defaultValue={`${initialFormValues.playoffsTeams}` || '4'}
+                                name="playoffsTeams"
+                                onChange={(value) => setFieldValue('playoffsTeams', +value)}
+                                options={PLAYOFFS_TEAMS_OPTIONS}
                               />
                             </Flex>
                           )}

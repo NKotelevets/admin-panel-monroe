@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet'
 import { useNavigate } from 'react-router-dom'
 import { ReactSVG } from 'react-svg'
 
+import { PLAYOFFS_TEAMS_OPTIONS } from '@/pages/Protected/LeaguesAndTournaments/constants'
 import { initialFormValues, validationSchema } from '@/pages/Protected/LeaguesAndTournaments/constants/formik'
 import {
   DEFAULT_STANDING_FORMAT_POINTS_TOOLTIP,
@@ -17,6 +18,7 @@ import {
 import MonroeInput from '@/components/Inputs/MonroeInput'
 import MonroeTextarea from '@/components/Inputs/MonroeTextarea'
 import MonroeButton from '@/components/MonroeButton'
+import MonroeSelect from '@/components/MonroeSelect'
 import MonroeTooltip from '@/components/MonroeTooltip'
 
 import BaseLayout from '@/layouts/BaseLayout'
@@ -59,7 +61,7 @@ const Create = () => {
     standingsFormat,
     tiebreakersFormat,
     welcomeNote,
-    payoffsTeams,
+    playoffsTeams,
     ...rest
   }: IFECreateLeagueBody) =>
     createLeague({
@@ -67,7 +69,7 @@ const Create = () => {
       standings_format: standingsFormat,
       tiebreakers_format: tiebreakersFormat,
       welcome_note: welcomeNote,
-      payoffs_teams: +payoffsTeams,
+      playoffs_teams: playoffsTeams,
       ...rest,
     })
       .unwrap()
@@ -103,7 +105,7 @@ const Create = () => {
 
           <div className="content">
             <Formik initialValues={initialFormValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
-              {({ values, handleChange, errors, handleSubmit }) => {
+              {({ values, handleChange, errors, handleSubmit, setFieldValue }) => {
                 const isEnabledButton = Object.keys(errors).length === 0 && values.name
 
                 return (
@@ -180,23 +182,22 @@ const Create = () => {
                           </Radio.Group>
 
                           {values.playoffFormat === 1 && (
-                            <Flex>
+                            <Flex align="center" style={{ marginBottom: '48px' }}>
                               <Typography.Text
                                 style={{
                                   color: 'rgba(26, 22, 87, 1)',
                                   fontWeight: 500,
+                                  marginRight: '8px',
                                 }}
                               >
                                 # playoffs' teams:{' '}
                               </Typography.Text>
 
-                              <MonroeInput
-                                inputClasses="playoff-team"
-                                name="payoffsTeams"
-                                onChange={(event) => {
-                                  if (+event.target.value) handleChange(event)
-                                }}
-                                value={values.payoffsTeams}
+                              <MonroeSelect
+                                defaultValue="4"
+                                name="playoffsTeams"
+                                onChange={(value) => setFieldValue('playoffsTeams', +value)}
+                                options={PLAYOFFS_TEAMS_OPTIONS}
                               />
                             </Flex>
                           )}

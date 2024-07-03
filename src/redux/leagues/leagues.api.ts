@@ -3,7 +3,14 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import baseQueryWithReAuth from '@/redux/reauthBaseQuery'
 
 import { IDeleteResponse, IPaginationResponse } from '@/common/interfaces/api'
-import { IBECreateLeagueBody, IBELeague, IFELeague } from '@/common/interfaces/league'
+import {
+  IBECreateLeagueBody,
+  IBELeague,
+  IFELeague,
+  IGetLeaguesRequestParams,
+  IGetLeaguesResponse,
+  IImportLeagueResponse,
+} from '@/common/interfaces/league'
 
 const LEAGUE_TAG = 'LEAGUE_TAG'
 
@@ -12,18 +19,10 @@ export const leaguesApi = createApi({
   baseQuery: baseQueryWithReAuth,
   tagTypes: [LEAGUE_TAG],
   endpoints: (builder) => ({
-    getLeagues: builder.query<
-      {
-        count: number
-        leagues: IFELeague[]
-      },
-      {
-        limit: number
-        offset: number
-      }
-    >({
-      query: ({ limit, offset }) => ({
-        url: `teams/leagues?limit=${limit}&offset=${offset}`,
+    getLeagues: builder.query<IGetLeaguesResponse, IGetLeaguesRequestParams>({
+      query: (params) => ({
+        url: 'teams/leagues',
+        params,
       }),
       providesTags: [LEAGUE_TAG],
       transformResponse: (data: IPaginationResponse<IBELeague[]>) => ({
@@ -38,8 +37,9 @@ export const leaguesApi = createApi({
           playoffFormat: league.playoff_format === 0 ? 'Best Record Wins' : 'Single Elimination Bracket',
           standingsFormat: league.standings_format === 0 ? 'Winning %' : 'Points',
           tiebreakersFormat: league.tiebreakers_format === 0 ? 'Winning %' : 'Points',
-          payoffsTeams: league.payoffs_teams,
+          playoffsTeams: league.playoffs_teams,
           welcomeNote: league.welcome_note,
+          seasons: league.league_seasons.map((season) => ({ id: season.id, name: season.name })),
         })),
       }),
     }),
@@ -80,8 +80,9 @@ export const leaguesApi = createApi({
         playoffFormat: league.playoff_format === 0 ? 'Best Record Wins' : 'Single Elimination Bracket',
         standingsFormat: league.standings_format === 0 ? 'Winning %' : 'Points',
         tiebreakersFormat: league.tiebreakers_format === 0 ? 'Winning %' : 'Points',
-        payoffsTeams: league.payoffs_teams,
+        playoffsTeams: league.playoffs_teams,
         welcomeNote: league.welcome_note,
+        seasons: league.league_seasons.map((season) => ({ id: season.id, name: season.name })),
       }),
     }),
     bulkDelete: builder.mutation<IDeleteResponse[], { ids: string[] }>({
@@ -101,6 +102,15 @@ export const leaguesApi = createApi({
       }),
       invalidatesTags: [LEAGUE_TAG],
     }),
+    importLeagues: builder.mutation<IImportLeagueResponse, { file: FormData }>({
+      query: ({ file }) => ({
+        url: 'teams/leagues/import-leagues',
+        method: 'POST',
+        body: {
+          file,
+        },
+      }),
+    }),
   }),
 })
 
@@ -112,4 +122,5 @@ export const {
   useGetLeagueQuery,
   useBulkDeleteMutation,
   useDeleteAllMutation,
+  useImportLeaguesMutation,
 } = leaguesApi

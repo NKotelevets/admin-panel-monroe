@@ -23,7 +23,7 @@ export const initialFormValues: IFECreateLeagueBody = {
   playoffFormat: 0,
   standingsFormat: 0,
   tiebreakersFormat: 0,
-  payoffsTeams: 4,
+  playoffsTeams: 4,
 }
 
 export const BREAD_CRUMB_ITEMS = [
@@ -79,4 +79,3 @@ export const DEFAULT_TIEBREAKERS_FORMAT_POINTS_TOOLTIP = (
     <p>Goals Allowed</p>
   </div>
 )
-
