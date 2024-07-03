@@ -68,20 +68,20 @@ const MonroeHeader = () => {
   return (
     <Header style={headerStyle}>
       <Flex vertical={false} style={{ width: '256px' }} justify="center">
-        <ReactSVG className="svg-wrapper" src={LogotypeIcon} />
+        <ReactSVG src={LogotypeIcon} />
       </Flex>
 
       <Flex vertical={false} align="center">
         <Flex vertical={false}>
-          <ReactSVG className="svg-wrapper header-icon" src={SearchIcon} />
+          <ReactSVG className="header-icon" src={SearchIcon} />
         </Flex>
 
         <Flex vertical={false}>
-          <ReactSVG className="svg-wrapper header-icon" src={QuestionCircleIcon} />
+          <ReactSVG className="header-icon" src={QuestionCircleIcon} />
         </Flex>
 
         <Flex vertical={false}>
-          <ReactSVG className="svg-wrapper header-icon" src={NotificationIcon} />
+          <ReactSVG className="header-icon" src={NotificationIcon} />
         </Flex>
 
         <Flex vertical={false} align="center" style={{ marginLeft: '12px' }}>
@@ -106,4 +106,3 @@ const MonroeHeader = () => {
 }
 
 export default MonroeHeader
-

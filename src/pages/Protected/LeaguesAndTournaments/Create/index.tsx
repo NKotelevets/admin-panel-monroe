@@ -59,6 +59,7 @@ const Create = () => {
     standingsFormat,
     tiebreakersFormat,
     welcomeNote,
+    payoffsTeams,
     ...rest
   }: IFECreateLeagueBody) =>
     createLeague({
@@ -66,6 +67,7 @@ const Create = () => {
       standings_format: standingsFormat,
       tiebreakers_format: tiebreakersFormat,
       welcome_note: welcomeNote,
+      payoffs_teams: +payoffsTeams,
       ...rest,
     })
       .unwrap()
@@ -176,6 +178,28 @@ const Create = () => {
                             <Radio value={0}>Best Record Wins</Radio>
                             <Radio value={1}>Single Elimination Bracket</Radio>
                           </Radio.Group>
+
+                          {values.playoffFormat === 1 && (
+                            <Flex>
+                              <Typography.Text
+                                style={{
+                                  color: 'rgba(26, 22, 87, 1)',
+                                  fontWeight: 500,
+                                }}
+                              >
+                                # playoffs' teams:{' '}
+                              </Typography.Text>
+
+                              <MonroeInput
+                                inputClasses="playoff-team"
+                                name="payoffsTeams"
+                                onChange={(event) => {
+                                  if (+event.target.value) handleChange(event)
+                                }}
+                                value={values.payoffsTeams}
+                              />
+                            </Flex>
+                          )}
                         </div>
 
                         <div style={{ marginBottom: '8px' }}>

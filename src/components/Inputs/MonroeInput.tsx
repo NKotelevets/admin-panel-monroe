@@ -5,8 +5,8 @@ import './monroe-input.style.css'
 
 interface IMonroeInputProps {
   label?: string
-  placeholder: string
-  value: string
+  placeholder?: string
+  value: string | number
   onChange: ChangeEventHandler<HTMLInputElement>
   name: string
   error?: string

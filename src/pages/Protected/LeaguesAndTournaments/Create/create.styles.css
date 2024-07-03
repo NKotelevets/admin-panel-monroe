@@ -80,3 +80,9 @@
  .cancel-button:hover {
    border: 1px solid #F44034 !important;
  }
+
+ .playoff-team {
+   width: 40px;
+   padding: 0 8px !important;
+   margin-left: 8px;
+ }

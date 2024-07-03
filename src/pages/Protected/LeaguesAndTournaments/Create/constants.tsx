@@ -23,6 +23,7 @@ export const initialFormValues: IFECreateLeagueBody = {
   playoffFormat: 0,
   standingsFormat: 0,
   tiebreakersFormat: 0,
+  payoffsTeams: 4,
 }
 
 export const BREAD_CRUMB_ITEMS = [
