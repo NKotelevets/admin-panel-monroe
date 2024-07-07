@@ -1,36 +1,34 @@
 import { DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons'
 import { Button, Flex, Typography } from 'antd'
-import { useCallback, useRef, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { useNavigate } from 'react-router-dom'
 
 import LeagueAndTournamentsTable from '@/pages/Protected/LeaguesAndTournaments/components/LeagueAndTournamentsTable'
 
-// import ImportModal from '@/components/ImportTooltip'
+import ImportModal from '@/components/ImportTooltip'
 import MonroeButton from '@/components/MonroeButton'
 import MonroeModal from '@/components/MonroeModal'
 
 import BaseLayout from '@/layouts/BaseLayout'
 
+import { useAppSlice } from '@/redux/hooks/useAppSlice'
 import { useLeagueSlice } from '@/redux/hooks/useLeagueSlice'
+import { useImportLeaguesMutation } from '@/redux/leagues/leagues.api'
+import { useBulkDeleteMutation, useDeleteAllMutation } from '@/redux/leagues/leagues.api'
 
-// import { useImportLeaguesMutation } from '@/redux/leagues/leagues.api'
-// import { useCookies } from '@/hooks/useCookies'
-// import { useBulkDeleteMutation, useDeleteAllMutation } from '@/redux/leagues/leagues.api'
 import {
-  PATH_TO_CREATE_LEAGUE_TOURNAMENT, //  PATH_TO_LEAGUE_TOURNAMENT_IMPORT_INFO
+  PATH_TO_CREATE_LEAGUE_TOURNAMENT,
+  PATH_TO_LEAGUE_TOURNAMENT_DELETING_INFO,
+  PATH_TO_LEAGUE_TOURNAMENT_IMPORT_INFO,
 } from '@/constants/paths'
 
-// const readFileToBase64 = (file: File): Promise<string> => {
-//   return new Promise((resolve, reject) => {
-//     const reader = new FileReader()
-
-//     reader.onload = (event) => resolve(event!.target.result as string)
-//     reader.onerror = (error) => reject(error)
-
-//     reader.readAsDataURL(file)
-//   })
-// }
+interface IImportModalOptions {
+  filename: string
+  errorMessage?: string
+  status: 'loading' | 'red' | 'green' | 'yellow'
+  isOpen: boolean
+}
 
 const LeaguesAndTournaments = () => {
   const navigate = useNavigate()
@@ -40,60 +38,136 @@ const LeaguesAndTournaments = () => {
   const [showAdditionalHeader, setShowAdditionalHeader] = useState(false)
   const [isDeleteAllRecords, setIsDeleteAllRecords] = useState(false)
   const deleteRecordsModalCount = isDeleteAllRecords ? total : selectedRecordsIds.length
-  // const [deleteAll] = useDeleteAllMutation()
-  // const [bulkDelete] = useBulkDeleteMutation()
-  // const { setAppNotification } = useAppSlice()
+  const [deleteAll] = useDeleteAllMutation()
+  const [bulkDelete] = useBulkDeleteMutation()
+  const { setAppNotification, setInfoNotification, clearInfoNotification } = useAppSlice()
   const inputRefForSmallScreens = useRef<HTMLInputElement | null>()
-  // const [importLeagues] = useImportLeaguesMutation()
-  // const { cookies } = useCookies()
   const leagueTournText = deleteRecordsModalCount > 1 ? 'leagues/tournaments' : 'league/tournament'
-  const [showCreatedRecords] = useState(false)
+  const [showCreatedRecords, setShowCreatedRecords] = useState(false)
+  const [importLeagues] = useImportLeaguesMutation()
+  const [importModalOptions, setImportModalOptions] = useState<IImportModalOptions>({
+    filename: '',
+    isOpen: false,
+    status: 'loading',
+    errorMessage: '',
+  })
 
   const goToCreateLeagueTournamentPage = () => navigate(PATH_TO_CREATE_LEAGUE_TOURNAMENT)
 
-  const handleCloseModal = useCallback(() => {
-    setIsOpenModal(false)
-  }, [])
+  const handleCloseModal = useCallback(() => setIsOpenModal(false), [])
 
   const handleDelete = () => {
-    // if (isDeleteAllRecords) {
-    //   deleteAll()
-    // } else {
-    //   bulkDelete({ ids: selectedRecordsIds })
-    //     .unwrap()
-    //     .then(() => {
-    //       setAppNotification({
-    //         message: `${selectedRecordsIds.length}/${selectedRecordsIds.length} leagues/tournaments have been successfully removed.`,
-    //         timestamp: new Date().getTime(),
-    //         type: 'success',
-    //       })
-    //       handleCloseModal()
-    //     })
-    // }
+    if (isDeleteAllRecords) {
+      deleteAll()
+        .unwrap()
+        .then((response) => {
+          handleCloseModal()
+
+          if (response.status !== 'green') {
+            setInfoNotification({
+              actionLabel: 'More info..',
+              message: `${response.success}/${response.total} leagues/tournaments have been successfully removed.`,
+              redirectedPageUrl: PATH_TO_LEAGUE_TOURNAMENT_DELETING_INFO,
+            })
+
+            return
+          }
+
+          if (response.status === 'green') {
+            setAppNotification({
+              message: `${response.success}/${response.total} leagues/tournaments have been successfully removed.`,
+              timestamp: new Date().getTime(),
+              type: 'success',
+            })
+          }
+        })
+    } else {
+      bulkDelete({ ids: selectedRecordsIds })
+        .unwrap()
+        .then((response) => {
+          handleCloseModal()
+
+          if (response.status !== 'green') {
+            setInfoNotification({
+              actionLabel: 'More info..',
+              message: `${response.success}/${response.total} leagues/tournaments have been successfully removed.`,
+              redirectedPageUrl: PATH_TO_LEAGUE_TOURNAMENT_DELETING_INFO,
+            })
+
+            return
+          }
+
+          if (response.status === 'green') {
+            setAppNotification({
+              message: `${response.success}/${response.total} leagues/tournaments have been successfully removed.`,
+              timestamp: new Date().getTime(),
+              type: 'success',
+            })
+          }
+        })
+    }
   }
 
-  // const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
-  //   const file = event.target.files?.[0]
+  const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
 
-  //   if (file) {
-  //     const base64 = await readFileToBase64(file)
+    if (file) {
+      setImportModalOptions({
+        filename: file.name,
+        isOpen: true,
+        status: 'loading',
+        errorMessage: '',
+      })
 
-  //     console.log({ base64 })
+      const body = new FormData()
+      body.set('file', file)
 
-  //     fetch('https://cp.swiftschedule.net/api/v1/teams/leagues/import-leagues', {
-  //       method: 'POST',
-  //       headers: {
-  //         authorization: `Bearer ${cookies.accessToken}`,
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: {
-  //         file: base64,
-  //       },
-  //     })
-  //       .then((response) => console.log({ response }))
-  //       .catch((error) => console.error(error))
-  //   }
-  // }
+      await importLeagues(body)
+        .unwrap()
+        .then((response) => {
+          if (response.status === 'green') {
+            setImportModalOptions({
+              filename: file.name,
+              isOpen: true,
+              status: 'green',
+              errorMessage: '',
+            })
+          }
+
+          if (response.status === 'red') {
+            setImportModalOptions({
+              filename: file.name,
+              isOpen: true,
+              status: 'red',
+              errorMessage: '',
+            })
+          }
+
+          if (response.status === 'yellow') {
+            setImportModalOptions({
+              filename: file.name,
+              isOpen: true,
+              status: 'yellow',
+              errorMessage: '',
+            })
+          }
+        })
+        .catch((error) => {
+          setImportModalOptions({
+            filename: file.name,
+            isOpen: true,
+            status: 'red',
+            errorMessage: (error.data as { code: string; detail: string }).detail,
+          })
+        })
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      clearInfoNotification()
+    }
+  }, [])
 
   return (
     <>
@@ -101,14 +175,20 @@ const LeaguesAndTournaments = () => {
         <title>Admin Panel | Leagues and Tournaments</title>
       </Helmet>
 
-      {/* <ImportModal
-        title="Importing"
-        filename="Doc2.csv"
-        status="warning"
-        // errorMessage="Missing data for name in the file"
-        showInList={() => setShowCreatedRecords(true)}
-        redirectToImportInfo={() => navigate(PATH_TO_LEAGUE_TOURNAMENT_IMPORT_INFO)}
-      /> */}
+      {importModalOptions.isOpen && (
+        <ImportModal
+          title="Importing"
+          filename={importModalOptions.filename}
+          status={importModalOptions.status}
+          errorMessage={importModalOptions.errorMessage}
+          showInList={() => setShowCreatedRecords(true)}
+          redirectToImportInfo={() => {
+            setImportModalOptions((prev) => ({ ...prev, isOpen: false }))
+            navigate(PATH_TO_LEAGUE_TOURNAMENT_IMPORT_INFO)
+          }}
+          onClose={() => setImportModalOptions((prev) => ({ ...prev, isOpen: false }))}
+        />
+      )}
 
       {isOpenModal && (
         <MonroeModal
@@ -187,7 +267,7 @@ const LeaguesAndTournaments = () => {
                 type="file"
                 name="leagues"
                 accept=".csv"
-                onChange={() => {}}
+                onChange={handleChange}
                 style={{ display: 'none' }}
               />
 
