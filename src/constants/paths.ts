@@ -7,6 +7,7 @@ export const PATH_TO_LEAGUE_TOURNAMENT_PAGE = '/league-tournament'
 export const PATH_TO_CREATE_LEAGUE_TOURNAMENT = '/leagues-and-tournaments/create'
 export const PATH_TO_EDIT_LEAGUE_TOURNAMENT = '/leagues-and-tournaments/edit'
 export const PATH_TO_LEAGUE_TOURNAMENT_IMPORT_INFO = '/leagues-and-tournaments/import-info'
+export const PATH_TO_LEAGUE_TOURNAMENT_DELETING_INFO = '/leagues-and-tournaments/deleting-info'
 
 export const PATH_TO_USERS_PAGE = '/users'
 export const PATH_TO_MASTER_TEAMS_PAGE = '/master-teams'

@@ -1,3 +1,5 @@
+import { TDeletionStatus } from '@/common/types'
+
 export interface IPaginationResponse<T> {
   count: number
   prev: string
@@ -5,7 +7,15 @@ export interface IPaginationResponse<T> {
   results: T
 }
 
+export interface IDeletionItemError {
+  id: string
+  error: string
+  name: string
+}
+
 export interface IDeleteResponse {
-  code: string
-  details: string
+  status: TDeletionStatus
+  total: number
+  success: number
+  items: IDeletionItemError[]
 }

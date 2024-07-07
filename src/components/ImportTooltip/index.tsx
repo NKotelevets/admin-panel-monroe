@@ -12,13 +12,13 @@ import WarningIcon from '@/assets/icons/import-modal/warning.svg'
 import PaperClipIcon from '@/assets/icons/paper-clip.svg'
 import SpinIcon from '@/assets/icons/spin.svg'
 
-type TImportModalStatus = 'loading' | 'error' | 'success' | 'warning'
+type TImportModalStatus = 'loading' | 'red' | 'green' | 'yellow'
 
 const CLASS_OPTIONS: Record<TImportModalStatus, string> = {
   loading: '',
-  error: 'red-text',
-  success: '',
-  warning: 'red-text',
+  red: 'red-text',
+  green: '',
+  yellow: 'red-text',
 }
 
 interface IImportModalProps {
@@ -28,6 +28,7 @@ interface IImportModalProps {
   errorMessage?: string
   showInList: () => void
   redirectToImportInfo: () => void
+  onClose: () => void
 }
 
 const ImportModal: FC<IImportModalProps> = ({
@@ -37,6 +38,7 @@ const ImportModal: FC<IImportModalProps> = ({
   errorMessage = '',
   showInList,
   redirectToImportInfo,
+  onClose,
 }) => {
   const [isHoveredContent, setIsHoveredContent] = useState(false)
 
@@ -47,7 +49,7 @@ const ImportModal: FC<IImportModalProps> = ({
           {title}
         </Typography.Title>
 
-        <ReactSVG src={CloseIcon} />
+        <ReactSVG src={CloseIcon} onClick={onClose} />
       </Flex>
 
       <Tooltip title={errorMessage} color="rgba(62, 62, 72, 0.75)">
@@ -65,7 +67,7 @@ const ImportModal: FC<IImportModalProps> = ({
 
           {status === 'loading' && <ReactSVG className={classes['spin']} src={SpinIcon} />}
 
-          {status === 'success' &&
+          {status === 'green' &&
             (isHoveredContent ? (
               <Typography style={{ color: 'rgba(62, 52, 202, 1)', cursor: 'pointer' }} onClick={showInList}>
                 Show in list
@@ -74,9 +76,9 @@ const ImportModal: FC<IImportModalProps> = ({
               <ReactSVG src={SuccessIcon} />
             ))}
 
-          {status === 'error' && <ReactSVG src={ErrorIcon} />}
+          {status === 'red' && <ReactSVG src={ErrorIcon} />}
 
-          {status === 'warning' &&
+          {status === 'yellow' &&
             (isHoveredContent ? (
               <Typography style={{ color: 'rgba(62, 52, 202, 1)', cursor: 'pointer' }} onClick={redirectToImportInfo}>
                 Import info

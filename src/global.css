@@ -99,4 +99,9 @@ svg {
   color: #1A1657 !important;
 }
 
+.ant-table-wrapper .ant-table-column-sorter-up.active,
+.ant-table-wrapper .ant-table-column-sorter-down.active {
+  color: rgba(26, 22, 87, 1) !important
+}
+
 /* Table styles - end */

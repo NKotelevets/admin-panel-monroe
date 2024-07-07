@@ -6,6 +6,7 @@ import { IDeleteResponse, IPaginationResponse } from '@/common/interfaces/api'
 import {
   IBECreateLeagueBody,
   IBELeague,
+  IBEUpdateLeagueBody,
   IFELeague,
   IGetLeaguesRequestParams,
   IGetLeaguesResponse,
@@ -85,7 +86,7 @@ export const leaguesApi = createApi({
         seasons: league.league_seasons.map((season) => ({ id: season.id, name: season.name })),
       }),
     }),
-    bulkDelete: builder.mutation<IDeleteResponse[], { ids: string[] }>({
+    bulkDelete: builder.mutation<IDeleteResponse, { ids: string[] }>({
       query: ({ ids }) => ({
         url: 'teams/leagues/bulk-leagues-delete',
         method: 'POST',
@@ -95,20 +96,25 @@ export const leaguesApi = createApi({
       }),
       invalidatesTags: [LEAGUE_TAG],
     }),
-    deleteAll: builder.mutation<IDeleteResponse[], void>({
+    deleteAll: builder.mutation<IDeleteResponse, void>({
       query: () => ({
         url: 'teams/leagues/delete_all',
         method: 'POST',
       }),
       invalidatesTags: [LEAGUE_TAG],
     }),
-    importLeagues: builder.mutation<IImportLeagueResponse, { file: FormData }>({
-      query: ({ file }) => ({
+    bulkUpdate: builder.mutation<void, IBEUpdateLeagueBody[]>({
+      query: (body) => ({
+        url: 'teams/leagues/bulk-update',
+        method: 'POST',
+        body,
+      }),
+    }),
+    importLeagues: builder.mutation<IImportLeagueResponse, FormData>({
+      query: (body) => ({
         url: 'teams/leagues/import-leagues',
         method: 'POST',
-        body: {
-          file,
-        },
+        body,
       }),
     }),
   }),
@@ -119,8 +125,10 @@ export const {
   useDeleteLeagueMutation,
   useUpdateLeagueMutation,
   useGetLeaguesQuery,
+  useLazyGetLeaguesQuery,
   useGetLeagueQuery,
   useBulkDeleteMutation,
   useDeleteAllMutation,
   useImportLeaguesMutation,
+  useBulkUpdateMutation,
 } = leaguesApi

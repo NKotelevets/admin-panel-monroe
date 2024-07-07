@@ -1,7 +1,7 @@
 import { Breadcrumb, Divider, Flex, Typography } from 'antd'
 import Radio from 'antd/es/radio'
 import { Form, Formik } from 'formik'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { Helmet } from 'react-helmet'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ReactSVG } from 'react-svg'
@@ -38,21 +38,26 @@ const Edit = () => {
   const navigate = useNavigate()
   const params = useParams<{ id: string }>()
   const leagueId = params.id || ''
-  const { data, isError, isLoading } = useGetLeagueQuery(leagueId, { skip: !leagueId })
+  const { data, currentData, isError, isLoading } = useGetLeagueQuery(leagueId, {
+    skip: !leagueId,
+    refetchOnMountOrArgChange: true,
+  })
   const initialFormValues: IFECreateLeagueBody = {
-    description: data?.description || '',
-    name: data?.name || '',
-    playoffFormat: (data?.playoffFormat === 'Best Record Wins' ? 0 : 1) || 0,
-    standingsFormat: data?.standingsFormat === 'Winning %' ? 0 : 1 || 0,
-    tiebreakersFormat: data?.tiebreakersFormat === 'Winning %' ? 0 : 1 || 0,
-    type: data?.type === 'League' ? 0 : 1 || 0,
-    welcomeNote: data?.welcomeNote || '',
-    playoffsTeams: data?.playoffsTeams || 0,
+    description: currentData?.description || '',
+    name: currentData?.name || '',
+    playoffFormat: (currentData?.playoffFormat === 'Best Record Wins' ? 0 : 1) || 0,
+    standingsFormat: currentData?.standingsFormat === 'Winning %' ? 0 : 1 || 0,
+    tiebreakersFormat: currentData?.tiebreakersFormat === 'Winning %' ? 0 : 1 || 0,
+    type: currentData?.type === 'League' ? 0 : 1 || 0,
+    welcomeNote: currentData?.welcomeNote || '',
+    playoffsTeams: currentData?.playoffsTeams || 0,
   }
+
+  const mockedInitialValues = useMemo(() => initialFormValues, [data])
 
   const BREAD_CRUMB_ITEMS = [
     {
-      title: <a href={PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE}>{data?.name}</a>,
+      title: <a href={PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE}>League & Tourn</a>,
     },
     {
       title: (
@@ -126,7 +131,7 @@ const Edit = () => {
           </Typography.Title>
 
           <div className="content">
-            <Formik initialValues={initialFormValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
+            <Formik initialValues={mockedInitialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
               {({ values, handleChange, errors, handleSubmit, setFieldValue }) => {
                 const isEnabledButton = Object.keys(errors).length === 0 && values.name
 
@@ -216,7 +221,7 @@ const Edit = () => {
                               </Typography.Text>
 
                               <MonroeSelect
-                                defaultValue={`${initialFormValues.playoffsTeams}` || '4'}
+                                defaultValue={`${mockedInitialValues.playoffsTeams}` || '4'}
                                 name="playoffsTeams"
                                 onChange={(value) => setFieldValue('playoffsTeams', +value)}
                                 options={PLAYOFFS_TEAMS_OPTIONS}

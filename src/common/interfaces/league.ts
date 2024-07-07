@@ -1,6 +1,7 @@
-import { IIdName } from './index'
-
+import { IIdName } from '@/common/interfaces'
 import { IBESeason } from '@/common/interfaces/season'
+import { TDeletionStatus } from '@/common/types'
+import { TLeagueTourn, TPlayOffFormat, TWinningPoints } from '@/common/types/league'
 
 interface ICommonLeagueFields {
   id: string
@@ -22,17 +23,13 @@ export interface IBELeague extends ICommonLeagueFields {
 
 export interface IBECreateLeagueBody extends Omit<IBELeague, 'id' | 'updated_at' | 'created_at' | 'league_seasons'> {}
 
-type TWinningPoints = 'Winning %' | 'Points'
+export interface IBEUpdateLeagueBody extends Omit<IBELeague, 'updated_at' | 'created_at' | 'league_seasons'> {}
 
-type TPlayOffFormat = 'Best Record Wins' | 'Single Elimination Bracket'
-
-type TLeagueTourn = 'League' | 'Tourn'
-
-export interface IFELeague extends ICommonLeagueFields {
+export interface IFELeague<T = TLeagueTourn> extends ICommonLeagueFields {
   updatedAt: string
   createdAt: string
   welcomeNote: string
-  type: TLeagueTourn
+  type: T
   playoffFormat: TPlayOffFormat
   standingsFormat: TWinningPoints
   tiebreakersFormat: TWinningPoints
@@ -58,33 +55,30 @@ interface IImportLeagueSuccess {
 interface IImportLeagueError {
   index: number
   error: string
+  league_name: string
 }
 
-interface IImportLeagueDuplicatesExisting {
-  id: string
-  updated_at: string
-  created_at: string
-  type: number
-  playoff_format: number
-  standings_format: number
-  tiebreakers_format: number
-  name: string
-  description: string
-  welcome_note: string
-  playoffs_teams: number
+export interface IImportedLeague {
+  'Default Playoff Format': string
+  'Default Standings Format': string
+  'Default Tiebreakers Format': string
+  Description: string
+  'League/Tournament Name': string
+  'Linked Seasons': string
+  Type: string
+  'Welcome Note': string
 }
 
-interface ILeagueChanges extends Omit<IBELeague, 'id' | 'updated_at' | 'created_at'> {}
+export interface INewLeague extends Omit<IBELeague, 'updated_at' | 'created_at'> {}
 
-interface IImportLeagueDuplicates {
+export interface IImportLeagueDuplicates {
   index: number
-  existing: IImportLeagueDuplicatesExisting[]
-  new: Partial<ILeagueChanges>
-  differences: Partial<ILeagueChanges>
+  existing: IBELeague
+  new: IImportedLeague
 }
 
 export interface IImportLeagueResponse {
-  status: ''
+  status: TDeletionStatus
   success: IImportLeagueSuccess[]
   errors: IImportLeagueError[]
   duplicates: IImportLeagueDuplicates[]
@@ -104,4 +98,10 @@ export interface IGetLeaguesRequestParams {
 export interface IGetLeaguesResponse {
   count: number
   leagues: IFELeague[]
+}
+
+export interface IDuplicate {
+  index: number
+  existing: IBELeague
+  new: INewLeague
 }

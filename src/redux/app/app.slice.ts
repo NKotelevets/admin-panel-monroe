@@ -6,6 +6,12 @@ import { userApi } from '@/redux/user/user.api'
 
 import { IDetailedError, INamedDetailsError } from '@/common/interfaces'
 
+interface IInfoNotification {
+  message: string
+  redirectedPageUrl: string
+  actionLabel: string
+}
+
 interface IAppNotification {
   message: string
   timestamp: number
@@ -14,6 +20,7 @@ interface IAppNotification {
 
 interface IAppSliceState {
   notification: IAppNotification
+  infoNotification: IInfoNotification
 }
 
 const EMPTY_NOTIFICATION: IAppNotification = {
@@ -22,8 +29,15 @@ const EMPTY_NOTIFICATION: IAppNotification = {
   type: 'error',
 }
 
+const EMPTY_INFO_NOTIFICATION: IInfoNotification = {
+  message: '',
+  actionLabel: '',
+  redirectedPageUrl: '',
+}
+
 const authSliceState: IAppSliceState = {
   notification: EMPTY_NOTIFICATION,
+  infoNotification: EMPTY_INFO_NOTIFICATION,
 }
 
 export const appSlice = createSlice({
@@ -33,8 +47,14 @@ export const appSlice = createSlice({
     clearNotification: (state) => {
       state.notification = EMPTY_NOTIFICATION
     },
+    clearInfoNotification: (state) => {
+      state.infoNotification = EMPTY_INFO_NOTIFICATION
+    },
     setAppNotification: (state, action: PayloadAction<IAppNotification>) => {
       state.notification = action.payload
+    },
+    setInfoNotification: (state, action: PayloadAction<IInfoNotification>) => {
+      state.infoNotification = action.payload
     },
   },
   extraReducers: (builder) =>

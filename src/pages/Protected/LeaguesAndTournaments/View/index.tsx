@@ -190,18 +190,20 @@ const View = () => {
             <Flex className="field-wrapper">
               <Typography.Text className="view-text">Connected seasons:</Typography.Text>
 
-              <div className=" field-value-container">
-                {data?.seasons.map((season, idx) => (
-                  <Fragment key={season.id}>
-                    <Typography.Text className="view-season-text">{season.name}</Typography.Text>
+              <div className="field-value-container">
+                {data?.seasons.length
+                  ? data?.seasons.map((season, idx) => (
+                      <Fragment key={season.id}>
+                        <Typography.Text className="view-season-text">{season.name}</Typography.Text>
 
-                    {idx === CONNECTED_SEASONS.length - 1 ? (
-                      ''
-                    ) : (
-                      <Typography.Text className="view-season-divider">,</Typography.Text>
-                    )}
-                  </Fragment>
-                ))}
+                        {idx === CONNECTED_SEASONS.length - 1 ? (
+                          ''
+                        ) : (
+                          <Typography.Text className="view-season-divider">,</Typography.Text>
+                        )}
+                      </Fragment>
+                    ))
+                  : '-'}
               </div>
             </Flex>
           </Flex>

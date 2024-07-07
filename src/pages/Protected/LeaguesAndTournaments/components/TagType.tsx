@@ -6,7 +6,7 @@ const tournTagStyles = { border: '1px solid #A49EFF', backgroundColor: '#F1F0FF'
 const leagueTagStyles = { border: '1px solid #FF594D', backgroundColor: '#FFF1F0' }
 
 const TagType: FC<{ text: string }> = ({ text }) => {
-  const style = text === 'Tourn' ? tournTagStyles : leagueTagStyles
+  const style = text === 'Tourn' || text === 'Tournament' ? tournTagStyles : leagueTagStyles
 
   return (
     <Space
@@ -19,7 +19,7 @@ const TagType: FC<{ text: string }> = ({ text }) => {
     >
       <Typography.Text
         style={{
-          color: text === 'Tourn' ? '#4C41E6' : '#BC261B',
+          color: text === 'Tourn' || text === 'Tournament' ? '#4C41E6' : '#BC261B',
         }}
       >
         {text}

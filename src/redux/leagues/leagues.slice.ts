@@ -1,20 +1,29 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createSlice, isAnyOf } from '@reduxjs/toolkit'
 
 import { leaguesApi } from '@/redux/leagues/leagues.api'
 
-import { IFELeague } from '@/common/interfaces/league'
+import { getNormalizedNewVersionOfLeagueTourn } from '@/utils/league'
+
+import { IDeletionItemError } from '@/common/interfaces/api'
+import { IDuplicate, IFELeague } from '@/common/interfaces/league'
+
+interface ILeagueImportInfoTableRecord {
+  name: string
+  message: string
+  type: 'Error' | 'Duplicate'
+  idx: number
+}
 
 interface ILeaguesSliceState {
   leagues: IFELeague[]
   limit: number
   offset: number
   total: number
-  league_name: string
-  type: string
-  playoff_format: string
-  standings_format: string
-  tiebreakers_format: string
   order_by: 'asc' | 'desc'
+  deletedRecordsErrors: IDeletionItemError[]
+  createdRecordsNames: string[]
+  duplicates: IDuplicate[]
+  tableRecords: ILeagueImportInfoTableRecord[]
 }
 
 const leaguesSliceState: ILeaguesSliceState = {
@@ -22,12 +31,11 @@ const leaguesSliceState: ILeaguesSliceState = {
   limit: 10,
   offset: 0,
   total: 0,
-  type: '',
-  league_name: '',
-  playoff_format: '',
-  standings_format: '',
-  tiebreakers_format: '',
   order_by: 'asc',
+  deletedRecordsErrors: [],
+  createdRecordsNames: [],
+  duplicates: [],
+  tableRecords: [],
 }
 
 export const leaguesSlice = createSlice({
@@ -39,27 +47,55 @@ export const leaguesSlice = createSlice({
       action: PayloadAction<{
         limit: number
         offset: number
-        league_name?: string
-        type?: string
-        playoff_format?: string
-        standings_format?: string
-        tiebreakers_format?: string
-        order_by: 'asc' | 'desc'
+        order_by: string
       }>,
     ) => {
       state.limit = action.payload.limit
       state.offset = action.payload.offset
-      state.league_name = action.payload.league_name || ''
-      state.type = action.payload.type || ''
-      state.playoff_format = action.payload.playoff_format || ''
-      state.standings_format = action.payload.standings_format || ''
-      state.tiebreakers_format = action.payload.tiebreakers_format || ''
-      state.order_by = action.payload.order_by
+      state.order_by = action.payload.order_by as 'asc' | 'desc'
+    },
+    removeDuplicate: (state, action: PayloadAction<number>) => {
+      const remainingDuplicates = state.duplicates.filter((duplicate) => duplicate.index !== action.payload)
+      const remainingTableRecords = state.tableRecords.filter((tableRecord) => tableRecord.idx !== action.payload)
+
+      state.duplicates = remainingDuplicates
+      state.tableRecords = remainingTableRecords
     },
   },
   extraReducers: (builder) =>
-    builder.addMatcher(leaguesApi.endpoints.getLeagues.matchFulfilled, (state, action) => {
-      state.leagues = action.payload.leagues
-      state.total = action.payload.count
-    }),
+    builder
+      .addMatcher(leaguesApi.endpoints.getLeagues.matchFulfilled, (state, action) => {
+        state.leagues = action.payload.leagues
+        state.total = action.payload.count
+      })
+      .addMatcher(leaguesApi.endpoints.importLeagues.matchFulfilled, (state, action) => {
+        state.createdRecordsNames = action.payload.success.map((item) => item.name)
+        state.duplicates = action.payload.duplicates.map((duplicate, idx) => ({
+          existing: duplicate.existing,
+          new: getNormalizedNewVersionOfLeagueTourn(duplicate.existing.id, duplicate.new),
+          index: idx,
+        }))
+        state.tableRecords = [
+          ...(action.payload.duplicates.map((duplicate, idx) => {
+            return {
+              message: 'A file with this data already exists',
+              name: duplicate.existing.name,
+              type: 'Duplicate',
+              idx: idx,
+            }
+          }) as ILeagueImportInfoTableRecord[]),
+          ...(action.payload.errors.map((error) => ({
+            idx: -1,
+            message: error.error,
+            name: error.league_name,
+            type: 'Error',
+          })) as ILeagueImportInfoTableRecord[]),
+        ]
+      })
+      .addMatcher(
+        isAnyOf(leaguesApi.endpoints.deleteAll.matchFulfilled, leaguesApi.endpoints.bulkDelete.matchFulfilled),
+        (state, action) => {
+          state.deletedRecordsErrors = action.payload.items
+        },
+      ),
 })
