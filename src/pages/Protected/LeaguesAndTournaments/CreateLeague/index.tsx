@@ -1,13 +1,13 @@
 import { Breadcrumb, Divider, Flex, Typography } from 'antd'
 import Radio from 'antd/es/radio'
 import { Form, Formik } from 'formik'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ReactSVG } from 'react-svg'
 
 import { PLAYOFFS_TEAMS_OPTIONS } from '@/pages/Protected/LeaguesAndTournaments/constants'
-import { validationSchema } from '@/pages/Protected/LeaguesAndTournaments/constants/formik'
+import { initialFormValues, validationSchema } from '@/pages/Protected/LeaguesAndTournaments/constants/formik'
 import {
   DEFAULT_STANDING_FORMAT_POINTS_TOOLTIP,
   DEFAULT_STANDING_FORMAT_WINNING_TOOLTIP,
@@ -23,7 +23,7 @@ import MonroeTooltip from '@/components/MonroeTooltip'
 
 import BaseLayout from '@/layouts/BaseLayout'
 
-import { useGetLeagueQuery, useUpdateLeagueMutation } from '@/redux/leagues/leagues.api'
+import { useCreateLeagueMutation } from '@/redux/leagues/leagues.api'
 
 import { PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE } from '@/constants/paths'
 
@@ -33,44 +33,26 @@ import './create.styles.css'
 
 import InfoCircleIcon from '@/assets/icons/info-circle.svg'
 
-const Edit = () => {
-  const [updateLeague] = useUpdateLeagueMutation()
+const BREAD_CRUMB_ITEMS = [
+  {
+    title: <a href={PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE}>League & Tourn</a>,
+  },
+  {
+    title: (
+      <Typography.Text
+        style={{
+          color: 'rgba(26, 22, 87, 0.85)',
+        }}
+      >
+        Create League/Tournament
+      </Typography.Text>
+    ),
+  },
+]
+
+const CreateLeague = () => {
+  const [createLeague] = useCreateLeagueMutation()
   const navigate = useNavigate()
-  const params = useParams<{ id: string }>()
-  const leagueId = params.id || ''
-  const { data, currentData, isError, isLoading } = useGetLeagueQuery(leagueId, {
-    skip: !leagueId,
-    refetchOnMountOrArgChange: true,
-  })
-  const initialFormValues: IFECreateLeagueBody = {
-    description: currentData?.description || '',
-    name: currentData?.name || '',
-    playoffFormat: (currentData?.playoffFormat === 'Best Record Wins' ? 0 : 1) || 0,
-    standingsFormat: currentData?.standingsFormat === 'Winning %' ? 0 : 1 || 0,
-    tiebreakersFormat: currentData?.tiebreakersFormat === 'Winning %' ? 0 : 1 || 0,
-    type: currentData?.type === 'League' ? 0 : 1 || 0,
-    welcomeNote: currentData?.welcomeNote || '',
-    playoffsTeams: currentData?.playoffsTeams || 0,
-  }
-
-  const mockedInitialValues = useMemo(() => initialFormValues, [data])
-
-  const BREAD_CRUMB_ITEMS = [
-    {
-      title: <a href={PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE}>League & Tourn</a>,
-    },
-    {
-      title: (
-        <Typography.Text
-          style={{
-            color: 'rgba(26, 22, 87, 0.85)',
-          }}
-        >
-          {data?.name}
-        </Typography.Text>
-      ),
-    },
-  ]
 
   const goBack = useCallback(() => navigate(PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE), [])
 
@@ -82,16 +64,13 @@ const Edit = () => {
     playoffsTeams,
     ...rest
   }: IFECreateLeagueBody) =>
-    updateLeague({
-      id: leagueId,
-      body: {
-        playoff_format: playoffFormat,
-        standings_format: standingsFormat,
-        tiebreakers_format: tiebreakersFormat,
-        welcome_note: welcomeNote,
-        playoffs_teams: playoffsTeams,
-        ...rest,
-      },
+    createLeague({
+      playoff_format: playoffFormat,
+      standings_format: standingsFormat,
+      tiebreakers_format: tiebreakersFormat,
+      welcome_note: welcomeNote,
+      playoffs_teams: playoffsTeams,
+      ...rest,
     })
       .unwrap()
       .then(() => {
@@ -110,28 +89,22 @@ const Edit = () => {
     }
   }, [])
 
-  useEffect(() => {
-    if (!data && !isLoading) navigate(PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE)
-  }, [isError, isLoading, data])
-
-  if (!data && isLoading) return <h2>Loading..</h2>
-
   return (
     <BaseLayout>
       <>
         <Helmet>
-          <title>Admin Panel | Edit League/Tournament</title>
+          <title>Admin Panel | Create League/Tournament</title>
         </Helmet>
 
         <Flex className="container" vertical>
           <Breadcrumb items={BREAD_CRUMB_ITEMS} />
 
           <Typography.Title level={1} className="title">
-            Edit {data?.name}
+            Create League/Tournament
           </Typography.Title>
 
           <div className="content">
-            <Formik initialValues={mockedInitialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
+            <Formik initialValues={initialFormValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
               {({ values, handleChange, errors, handleSubmit, setFieldValue }) => {
                 const isEnabledButton = Object.keys(errors).length === 0 && values.name
 
@@ -221,7 +194,7 @@ const Edit = () => {
                               </Typography.Text>
 
                               <MonroeSelect
-                                defaultValue={`${mockedInitialValues.playoffsTeams}` || '4'}
+                                defaultValue="4"
                                 name="playoffsTeams"
                                 onChange={(value) => setFieldValue('playoffsTeams', +value)}
                                 options={PLAYOFFS_TEAMS_OPTIONS}
@@ -305,7 +278,7 @@ const Edit = () => {
                         />
 
                         <MonroeButton
-                          label="Edit"
+                          label="Create League/tourn"
                           type="primary"
                           onClick={handleSubmit}
                           isDisabled={!isEnabledButton}
@@ -323,4 +296,4 @@ const Edit = () => {
   )
 }
 
-export default Edit
+export default CreateLeague

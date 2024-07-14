@@ -1,4 +1,4 @@
-import LeagueTournDetailsColumn from './components/LeagueTournDetailsColumn'
+import LeagueTournDetailsColumn from './components/LeagueDetailsColumn'
 import { containerStyles, contentStyles, contentWrapperStyles, defaultButtonStyles, titleStyles } from './styles'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { Button, Flex, Typography } from 'antd'
@@ -6,14 +6,14 @@ import { FC, useState } from 'react'
 
 import { useAppSlice } from '@/redux/hooks/useAppSlice'
 import { useLeagueSlice } from '@/redux/hooks/useLeagueSlice'
-import { useBulkUpdateMutation, useUpdateLeagueMutation } from '@/redux/leagues/leagues.api'
+import { useBulkUpdateLeaguesMutation, useUpdateLeagueMutation } from '@/redux/leagues/leagues.api'
 
 import { compareObjects } from '@/utils/compareObjects'
 
 import { IBECreateLeagueBody, IBEUpdateLeagueBody, IFELeague } from '@/common/interfaces/league'
 import { TFullLeagueTournament } from '@/common/types/league'
 
-const ReviewUpdateModal: FC<{ idx: number; onClose: () => void }> = ({ idx, onClose }) => {
+const LeagueReviewUpdateModal: FC<{ idx: number; onClose: () => void }> = ({ idx, onClose }) => {
   const [currentIdx, setCurrentIdx] = useState<number>(idx)
   const { duplicates, removeDuplicate } = useLeagueSlice()
   const currentDuplicate = duplicates.find((duplicate) => duplicate.index === currentIdx)
@@ -21,7 +21,7 @@ const ReviewUpdateModal: FC<{ idx: number; onClose: () => void }> = ({ idx, onCl
   const newData = currentDuplicate!.new
   const [updateRecord] = useUpdateLeagueMutation()
   const { setAppNotification } = useAppSlice()
-  const [bulkUpdate] = useBulkUpdateMutation()
+  const [bulkUpdate] = useBulkUpdateLeaguesMutation()
 
   const normalizedNewRecord: Omit<IFELeague<TFullLeagueTournament>, 'createdAt' | 'updatedAt'> = {
     ...newData,
@@ -31,7 +31,7 @@ const ReviewUpdateModal: FC<{ idx: number; onClose: () => void }> = ({ idx, onCl
     tiebreakersFormat: newData.tiebreakers_format === 0 ? 'Winning %' : 'Points',
     welcomeNote: newData.welcome_note,
     playoffsTeams: newData.playoffs_teams,
-    seasons: newData.league_seasons,
+    seasons: newData.league_seasons as string[],
     description: newData.description,
   }
 
@@ -103,30 +103,13 @@ const ReviewUpdateModal: FC<{ idx: number; onClose: () => void }> = ({ idx, onCl
 
           <Flex>
             <LeagueTournDetailsColumn
+              {...existingRecordFullData}
               title="current"
-              name={existingRecordFullData.name}
-              description={existingRecordFullData.description}
-              playoffFormat={existingRecordFullData.playoffFormat}
-              standingsFormat={existingRecordFullData.standingsFormat}
-              tiebreakersFormat={existingRecordFullData.tiebreakersFormat}
-              type={existingRecordFullData.type}
-              welcomeNote={existingRecordFullData.welcomeNote}
               isNew={false}
               difference={objectsDifferences}
             />
 
-            <LeagueTournDetailsColumn
-              title="new"
-              name={normalizedNewRecord.name}
-              description={normalizedNewRecord.description}
-              playoffFormat={normalizedNewRecord.playoffFormat}
-              standingsFormat={normalizedNewRecord.standingsFormat}
-              tiebreakersFormat={normalizedNewRecord.tiebreakersFormat}
-              type={normalizedNewRecord.type}
-              welcomeNote={normalizedNewRecord.welcomeNote}
-              isNew
-              difference={objectsDifferences}
-            />
+            <LeagueTournDetailsColumn title="new" {...normalizedNewRecord} isNew difference={objectsDifferences} />
           </Flex>
         </Flex>
 
@@ -189,5 +172,5 @@ const ReviewUpdateModal: FC<{ idx: number; onClose: () => void }> = ({ idx, onCl
   )
 }
 
-export default ReviewUpdateModal
+export default LeagueReviewUpdateModal
 

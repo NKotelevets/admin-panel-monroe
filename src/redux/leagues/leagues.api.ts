@@ -2,7 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 
 import baseQueryWithReAuth from '@/redux/reauthBaseQuery'
 
-import { IDeleteResponse, IPaginationResponse } from '@/common/interfaces/api'
+import { IPaginationResponse } from '@/common/interfaces/api'
 import {
   IBECreateLeagueBody,
   IBELeague,
@@ -11,6 +11,7 @@ import {
   IGetLeaguesRequestParams,
   IGetLeaguesResponse,
   IImportLeagueResponse,
+  ILeagueBulkDeleteResponse,
 } from '@/common/interfaces/league'
 
 const LEAGUE_TAG = 'LEAGUE_TAG'
@@ -86,7 +87,7 @@ export const leaguesApi = createApi({
         seasons: league.league_seasons.map((season) => ({ id: season.id, name: season.name })),
       }),
     }),
-    bulkDelete: builder.mutation<IDeleteResponse, { ids: string[] }>({
+    bulkDeleteLeagues: builder.mutation<ILeagueBulkDeleteResponse, { ids: string[] }>({
       query: ({ ids }) => ({
         url: 'teams/leagues/bulk-leagues-delete',
         method: 'POST',
@@ -96,26 +97,27 @@ export const leaguesApi = createApi({
       }),
       invalidatesTags: [LEAGUE_TAG],
     }),
-    deleteAll: builder.mutation<IDeleteResponse, void>({
+    deleteAllLeagues: builder.mutation<ILeagueBulkDeleteResponse, void>({
       query: () => ({
         url: 'teams/leagues/delete_all',
         method: 'POST',
       }),
       invalidatesTags: [LEAGUE_TAG],
     }),
-    bulkUpdate: builder.mutation<void, IBEUpdateLeagueBody[]>({
+    bulkUpdateLeagues: builder.mutation<void, IBEUpdateLeagueBody[]>({
       query: (body) => ({
         url: 'teams/leagues/bulk-update',
         method: 'POST',
         body,
       }),
     }),
-    importLeagues: builder.mutation<IImportLeagueResponse, FormData>({
+    importLeaguesCSV: builder.mutation<IImportLeagueResponse, FormData>({
       query: (body) => ({
         url: 'teams/leagues/import-leagues',
         method: 'POST',
         body,
       }),
+      invalidatesTags: [LEAGUE_TAG],
     }),
   }),
 })
@@ -127,8 +129,8 @@ export const {
   useGetLeaguesQuery,
   useLazyGetLeaguesQuery,
   useGetLeagueQuery,
-  useBulkDeleteMutation,
-  useDeleteAllMutation,
-  useImportLeaguesMutation,
-  useBulkUpdateMutation,
+  useBulkDeleteLeaguesMutation,
+  useDeleteAllLeaguesMutation,
+  useImportLeaguesCSVMutation,
+  useBulkUpdateLeaguesMutation,
 } = leaguesApi

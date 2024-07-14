@@ -21,7 +21,9 @@ export interface IBELeague extends ICommonLeagueFields {
   league_seasons: IBESeason[]
 }
 
-export interface IBECreateLeagueBody extends Omit<IBELeague, 'id' | 'updated_at' | 'created_at' | 'league_seasons'> {}
+export interface IBECreateLeagueBody extends Omit<IBELeague, 'id' | 'updated_at' | 'created_at' | 'league_seasons'> {
+  league_seasons?: string[]
+}
 
 export interface IBEUpdateLeagueBody extends Omit<IBELeague, 'updated_at' | 'created_at' | 'league_seasons'> {}
 
@@ -34,7 +36,7 @@ export interface IFELeague<T = TLeagueTourn> extends ICommonLeagueFields {
   standingsFormat: TWinningPoints
   tiebreakersFormat: TWinningPoints
   playoffsTeams: number
-  seasons: IIdName[]
+  seasons: IIdName[] | string[]
 }
 
 export interface IFECreateLeagueBody {
@@ -67,9 +69,18 @@ export interface IImportedLeague {
   'Linked Seasons': string
   Type: string
   'Welcome Note': string
+  'Number of Teams to Qualify for Playoff': number
 }
 
-export interface INewLeague extends Omit<IBELeague, 'updated_at' | 'created_at'> {}
+export interface INewLeague extends ICommonLeagueFields {
+  type: number
+  playoff_format: number
+  standings_format: number
+  tiebreakers_format: number
+  playoffs_teams: number
+  welcome_note: string
+  league_seasons?: string[]
+}
 
 export interface IImportLeagueDuplicates {
   index: number
@@ -100,8 +111,21 @@ export interface IGetLeaguesResponse {
   leagues: IFELeague[]
 }
 
-export interface IDuplicate {
+export interface ILeagueDuplicate {
   index: number
   existing: IBELeague
   new: INewLeague
+}
+
+export interface ILeagueDeletionItemError {
+  id: string
+  error: string
+  name: string
+}
+
+export interface ILeagueBulkDeleteResponse {
+  status: TDeletionStatus
+  total: number
+  success: number
+  items: ILeagueDeletionItemError[]
 }

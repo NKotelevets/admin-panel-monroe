@@ -2,11 +2,14 @@ import { Route, Routes } from 'react-router-dom'
 
 import SignIn from '@/pages/Auth/SingIn'
 import LeaguesAndTournaments from '@/pages/Protected/LeaguesAndTournaments'
-import Create from '@/pages/Protected/LeaguesAndTournaments/Create'
-import DeletingInfo from '@/pages/Protected/LeaguesAndTournaments/DeletingInfo'
-import Edit from '@/pages/Protected/LeaguesAndTournaments/Edit'
-import ImportInfo from '@/pages/Protected/LeaguesAndTournaments/ImportInfo'
-import View from '@/pages/Protected/LeaguesAndTournaments/View'
+import CreateLeague from '@/pages/Protected/LeaguesAndTournaments/CreateLeague'
+import EditLeague from '@/pages/Protected/LeaguesAndTournaments/EditLeague'
+import LeagueDetails from '@/pages/Protected/LeaguesAndTournaments/LeagueDetails'
+import LeaguesDeletingInfo from '@/pages/Protected/LeaguesAndTournaments/LeaguesDeletingInfo'
+import LeaguesImportInfo from '@/pages/Protected/LeaguesAndTournaments/LeaguesImportInfo'
+import Seasons from '@/pages/Protected/Seasons'
+import SeasonsDeletingInfo from '@/pages/Protected/Seasons/SeasonsDeletingInfo'
+import SeasonsImportInfo from '@/pages/Protected/Seasons/SeasonsImportInfo'
 
 import InfoAlert from '@/components/InfoAlert'
 import Notification from '@/components/Notification'
@@ -20,6 +23,9 @@ import {
   PATH_TO_LEAGUE_TOURNAMENT_DELETING_INFO,
   PATH_TO_LEAGUE_TOURNAMENT_IMPORT_INFO,
   PATH_TO_LEAGUE_TOURNAMENT_PAGE,
+  PATH_TO_SEASONS_DELETING_INFO,
+  PATH_TO_SEASONS_IMPORT_INFO,
+  PATH_TO_SEASONS_PAGE,
   PATH_TO_SIGN_IN_PAGE,
 } from '@/constants/paths'
 
@@ -30,12 +36,19 @@ const Root = () => (
 
     <Routes>
       <Route path={PATH_TO_SIGN_IN_PAGE} element={<SignIn />} />
-      <Route path={PATH_TO_CREATE_LEAGUE_TOURNAMENT} element={<Create />} />
-      <Route path={`${PATH_TO_EDIT_LEAGUE_TOURNAMENT}/:id`} element={<Edit />} />
+
+      {/* LEAGUES & TOURNAMENTS PAGES */}
+      <Route path={PATH_TO_CREATE_LEAGUE_TOURNAMENT} element={<CreateLeague />} />
+      <Route path={`${PATH_TO_EDIT_LEAGUE_TOURNAMENT}/:id`} element={<EditLeague />} />
       <Route path={PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE} element={<LeaguesAndTournaments />} />
-      <Route path={`${PATH_TO_LEAGUE_TOURNAMENT_PAGE}/:id`} element={<View />} />
-      <Route path={PATH_TO_LEAGUE_TOURNAMENT_IMPORT_INFO} element={<ImportInfo />} />
-      <Route path={PATH_TO_LEAGUE_TOURNAMENT_DELETING_INFO} element={<DeletingInfo />} />
+      <Route path={`${PATH_TO_LEAGUE_TOURNAMENT_PAGE}/:id`} element={<LeagueDetails />} />
+      <Route path={PATH_TO_LEAGUE_TOURNAMENT_IMPORT_INFO} element={<LeaguesImportInfo />} />
+      <Route path={PATH_TO_LEAGUE_TOURNAMENT_DELETING_INFO} element={<LeaguesDeletingInfo />} />
+
+      {/* SEASONS PAGES */}
+      <Route path={PATH_TO_SEASONS_PAGE} element={<Seasons />} />
+      <Route path={PATH_TO_SEASONS_DELETING_INFO} element={<SeasonsDeletingInfo />} />
+      <Route path={PATH_TO_SEASONS_IMPORT_INFO} element={<SeasonsImportInfo />} />
     </Routes>
   </AuthProvider>
 )

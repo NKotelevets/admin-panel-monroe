@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import LeagueAndTournamentsTable from '@/pages/Protected/LeaguesAndTournaments/components/LeagueAndTournamentsTable'
 
 import ImportModal from '@/components/ImportTooltip'
+import Loader from '@/components/Loader'
 import MonroeButton from '@/components/MonroeButton'
 import MonroeModal from '@/components/MonroeModal'
 
@@ -14,8 +15,8 @@ import BaseLayout from '@/layouts/BaseLayout'
 
 import { useAppSlice } from '@/redux/hooks/useAppSlice'
 import { useLeagueSlice } from '@/redux/hooks/useLeagueSlice'
-import { useImportLeaguesMutation } from '@/redux/leagues/leagues.api'
-import { useBulkDeleteMutation, useDeleteAllMutation } from '@/redux/leagues/leagues.api'
+import { useImportLeaguesCSVMutation } from '@/redux/leagues/leagues.api'
+import { useBulkDeleteLeaguesMutation, useDeleteAllLeaguesMutation } from '@/redux/leagues/leagues.api'
 
 import {
   PATH_TO_CREATE_LEAGUE_TOURNAMENT,
@@ -38,13 +39,13 @@ const LeaguesAndTournaments = () => {
   const [showAdditionalHeader, setShowAdditionalHeader] = useState(false)
   const [isDeleteAllRecords, setIsDeleteAllRecords] = useState(false)
   const deleteRecordsModalCount = isDeleteAllRecords ? total : selectedRecordsIds.length
-  const [deleteAll] = useDeleteAllMutation()
-  const [bulkDelete] = useBulkDeleteMutation()
+  const [deleteAll, deleteAllData] = useDeleteAllLeaguesMutation()
+  const [bulkDelete, bulkDeleteData] = useBulkDeleteLeaguesMutation()
   const { setAppNotification, setInfoNotification, clearInfoNotification } = useAppSlice()
-  const inputRefForSmallScreens = useRef<HTMLInputElement | null>()
+  const inputRef = useRef<HTMLInputElement | null>()
   const leagueTournText = deleteRecordsModalCount > 1 ? 'leagues/tournaments' : 'league/tournament'
   const [showCreatedRecords, setShowCreatedRecords] = useState(false)
-  const [importLeagues] = useImportLeaguesMutation()
+  const [importLeagues] = useImportLeaguesCSVMutation()
   const [importModalOptions, setImportModalOptions] = useState<IImportModalOptions>({
     filename: '',
     isOpen: false,
@@ -57,11 +58,15 @@ const LeaguesAndTournaments = () => {
   const handleCloseModal = useCallback(() => setIsOpenModal(false), [])
 
   const handleDelete = () => {
+    handleCloseModal()
+
     if (isDeleteAllRecords) {
       deleteAll()
         .unwrap()
         .then((response) => {
-          handleCloseModal()
+          setSelectedRecordsIds([])
+          setShowAdditionalHeader(false)
+          setIsDeleteAllRecords(false)
 
           if (response.status !== 'green') {
             setInfoNotification({
@@ -85,7 +90,9 @@ const LeaguesAndTournaments = () => {
       bulkDelete({ ids: selectedRecordsIds })
         .unwrap()
         .then((response) => {
-          handleCloseModal()
+          setSelectedRecordsIds([])
+          setShowAdditionalHeader(false)
+          setIsDeleteAllRecords(false)
 
           if (response.status !== 'green') {
             setInfoNotification({
@@ -175,6 +182,10 @@ const LeaguesAndTournaments = () => {
         <title>Admin Panel | Leagues and Tournaments</title>
       </Helmet>
 
+      {(deleteAllData.isLoading || bulkDeleteData.isLoading) && (
+        <Loader text={`Deleting ${deleteRecordsModalCount} records`} />
+      )}
+
       {importModalOptions.isOpen && (
         <ImportModal
           title="Importing"
@@ -200,7 +211,7 @@ const LeaguesAndTournaments = () => {
           content={
             <>
               <p>
-                Are you sure you want to delete {deleteRecordsModalCount > 1 ? deleteRecordsModalCount : ''}
+                Are you sure you want to delete {deleteRecordsModalCount > 1 ? deleteRecordsModalCount : ''}{' '}
                 {leagueTournText}?
               </p>
             </>
@@ -254,7 +265,7 @@ const LeaguesAndTournaments = () => {
                 iconPosition="start"
                 type="default"
                 onClick={() => {
-                  inputRefForSmallScreens.current?.click()
+                  inputRef.current?.click()
                 }}
               >
                 Import CSV
@@ -262,7 +273,7 @@ const LeaguesAndTournaments = () => {
 
               <input
                 ref={(ref) => {
-                  inputRefForSmallScreens.current = ref
+                  inputRef.current = ref
                 }}
                 type="file"
                 name="leagues"

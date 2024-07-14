@@ -66,7 +66,16 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
   isDeleteAllRecords,
   showCreatedRecords,
 }) => {
-  const { setPaginationParams, limit, offset, total, leagues, order_by, createdRecordsNames } = useLeagueSlice()
+  const {
+    setPaginationParams,
+    limit,
+    offset,
+    total,
+    leagues,
+    order_by,
+    createdRecordsNames,
+    removeCreatedRecordsNames,
+  } = useLeagueSlice()
   const [getLeagues, { isLoading, isFetching, data }] = useLazyGetLeaguesQuery()
   const searchInput = useRef<InputRef>(null)
   const [tableParams, setTableParams] = useState<ITableParams>({
@@ -154,9 +163,6 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
       title: 'League/Tourn name',
       dataIndex: 'name',
       sorter: true,
-      filterSearch: true,
-      filterMode: 'tree',
-      onFilter: (value, record) => record.name.startsWith(value as string),
       fixed: 'left',
       width: '20vw',
       sortOrder: order_by ? (order_by === 'asc' ? 'ascend' : 'descend') : null,
@@ -166,6 +172,7 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
           style={{
             color: '#3E34CA',
             cursor: 'pointer',
+            zIndex: 9999,
           }}
           onClick={() => navigate(PATH_TO_LEAGUE_TOURNAMENT_PAGE + '/' + record.id)}
         >
@@ -378,8 +385,14 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
     getLeagues({
       limit,
       offset: limit * offset,
-      order_by,
+      order_by: order_by || '',
     })
+
+    return () => {
+      if (createdRecordsNames.length && showCreatedRecords) {
+        removeCreatedRecordsNames()
+      }
+    }
   }, [])
 
   type TFilters = Record<TFilterValueKey, FilterValue | null>
@@ -393,7 +406,7 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
     })
 
     const getLeaguesParams = {
-      offset: (pagination?.current && pagination?.current - 1) || 0,
+      offset: (pagination?.current && (pagination?.current - 1) * (pagination?.pageSize || 10)) || 0,
       limit: pagination?.pageSize || 10,
       league_name: (filters?.['name']?.[0] as string) ?? undefined,
       playoff_format:
@@ -407,13 +420,13 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
           ? undefined
           : (filters?.['tiebreakersFormat']?.[0] as string) ?? undefined,
       type: filters?.['type']?.length === 2 ? undefined : (filters?.['type']?.[0] as string) ?? undefined,
-      order_by: !Array.isArray(sorter) && sorter.order === 'descend' ? 'desc' : 'asc',
+      order_by: !Array.isArray(sorter) && sorter.order ? (sorter.order === 'descend' ? 'desc' : 'asc') : '',
     }
 
     getLeagues(getLeaguesParams)
 
     setPaginationParams({
-      offset: (pagination?.current && pagination?.current - 1) || 0,
+      offset: (pagination?.current && (pagination?.current - 1) * (pagination.pageSize || 10)) || 0,
       limit: pagination?.pageSize || 10,
       order_by: !Array.isArray(sorter) && sorter.order === 'descend' ? 'desc' : 'asc',
     })
@@ -512,6 +525,8 @@ const LeagueAndTournamentsTable: FC<ILeagueAndTournamentsTableProps> = ({
           selectedRowKeys: selectedRecordIds,
           onChange: (selected) => {
             if (selected.length === limit) setShowAdditionalHeader(true)
+
+            if (selected.length !== limit) setShowAdditionalHeader(false)
 
             if (!isDeleteAllRecords) setSelectedRecordsIds(selected as string[])
           },

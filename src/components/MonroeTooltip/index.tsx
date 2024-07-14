@@ -8,20 +8,27 @@ interface IMonroeTooltipProps {
   children: ReactNode
   width: string
   containerWidth?: string
+  arrowPosition?: 'top' | 'bottom'
 }
 
-const MonroeTooltip: FC<IMonroeTooltipProps> = ({ children, text, width, containerWidth = 'auto' }) => {
+const MonroeTooltip: FC<IMonroeTooltipProps> = ({
+  children,
+  text,
+  width,
+  containerWidth = 'auto',
+  arrowPosition = 'bottom',
+}) => {
   const [showTooltip, setShowTooltip] = useState(false)
 
   return (
     <Flex
-      className="tooltip"
+      className={`tooltip ${arrowPosition}`}
       style={{
         width: containerWidth,
       }}
     >
       {showTooltip && (
-        <Flex className="tooltip-content" style={{ width }}>
+        <Flex className={`tooltip-content ${arrowPosition}`} style={{ width }}>
           {text}
         </Flex>
       )}
@@ -38,4 +45,3 @@ const MonroeTooltip: FC<IMonroeTooltipProps> = ({ children, text, width, contain
 }
 
 export default MonroeTooltip
-

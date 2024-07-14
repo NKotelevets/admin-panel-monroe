@@ -1,7 +1,8 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createSlice, isAnyOf } from '@reduxjs/toolkit'
 
 import { authApi } from '@/redux/auth/auth.api'
 import { leaguesApi } from '@/redux/leagues/leagues.api'
+import { seasonsApi } from '@/redux/seasons/seasons.api'
 import { userApi } from '@/redux/user/user.api'
 
 import { IDetailedError, INamedDetailsError } from '@/common/interfaces'
@@ -67,12 +68,19 @@ export const appSlice = createSlice({
         state.notification.message = 'Invalid Email/Password'
         state.notification.timestamp = new Date().getTime()
       })
-      .addMatcher(leaguesApi.endpoints.createLeague.matchRejected, (state, action) => {
-        state.notification.message = (action.payload?.data as INamedDetailsError).details.name[0]
-        state.notification.timestamp = new Date().getTime()
-      })
+      .addMatcher(
+        isAnyOf(leaguesApi.endpoints.createLeague.matchRejected, leaguesApi.endpoints.updateLeague.matchRejected),
+        (state, action) => {
+          state.notification.message = (action.payload?.data as INamedDetailsError).details.name[0]
+          state.notification.timestamp = new Date().getTime()
+        },
+      )
       .addMatcher(leaguesApi.endpoints.deleteLeague.matchRejected, (state, action) => {
         state.notification.message = (action.payload?.data as IDetailedError).details
+        state.notification.timestamp = new Date().getTime()
+      })
+      .addMatcher(seasonsApi.endpoints.deleteSeason.matchRejected, (state, action) => {
+        state.notification.message = (action.payload?.data as { error: string }).error
         state.notification.timestamp = new Date().getTime()
       }),
 })

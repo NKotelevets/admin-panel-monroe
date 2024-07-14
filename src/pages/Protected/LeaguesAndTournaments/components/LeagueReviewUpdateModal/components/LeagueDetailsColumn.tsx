@@ -35,7 +35,7 @@ const itemContainerStyle: CSSProperties = {
   marginBottom: '16px',
 }
 
-interface ILeagueTournDetailsColumnProps {
+interface ILeagueDetailsColumnProps {
   title: string
   name: string
   type: string
@@ -48,7 +48,7 @@ interface ILeagueTournDetailsColumnProps {
   difference: Record<Partial<keyof IFELeague>, boolean>
 }
 
-const LeagueTournDetailsColumn: FC<ILeagueTournDetailsColumnProps> = ({
+const LeagueDetailsColumn: FC<ILeagueDetailsColumnProps> = ({
   title,
   name,
   type,
@@ -102,5 +102,5 @@ const LeagueTournDetailsColumn: FC<ILeagueTournDetailsColumnProps> = ({
   </Flex>
 )
 
-export default LeagueTournDetailsColumn
+export default LeagueDetailsColumn
 

@@ -6,51 +6,42 @@ import Input from 'antd/es/input/Input'
 import Space from 'antd/es/space'
 import { FilterDropdownProps, SorterResult } from 'antd/es/table/interface'
 import Typography from 'antd/es/typography'
-import { useRef, useState } from 'react'
+import { CSSProperties, useRef, useState } from 'react'
 import { FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ReactSVG } from 'react-svg'
 
-import ReviewUpdateModal from '@/pages/Protected/LeaguesAndTournaments/components/ReviewUpdateModal'
+import SeasonsReviewUpdateModal from '@/pages/Protected/Seasons/components/SeasonsReviewUpdateModal'
 
 import MonroeFilter from '@/components/Table/MonroeFilter'
 
 import BaseLayout from '@/layouts/BaseLayout'
 
-import { useAppSlice } from '@/redux/hooks/useAppSlice'
-import { useLeagueSlice } from '@/redux/hooks/useLeagueSlice'
-import { useUpdateLeagueMutation } from '@/redux/leagues/leagues.api'
+import { useSeasonSlice } from '@/redux/hooks/useSeasonSlice'
 
-import { PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE } from '@/constants/paths'
+import { containerStyles, descriptionStyle, titleStyle } from '@/constants/deleting-importing-info.styles'
+import { PATH_TO_LEAGUE_TOURNAMENT_PAGE, PATH_TO_SEASONS_PAGE } from '@/constants/paths'
 
-import { IBECreateLeagueBody, IFELeague } from '@/common/interfaces/league'
-import { TFullLeagueTournament } from '@/common/types/league'
-
-import classes from './import-info.module.css'
+import { IImportSeasonTableRecord } from '@/common/interfaces/season'
+import { TErrorDuplicate } from '@/common/types'
 
 import SyncIcon from '@/assets/icons/sync.svg'
-
-interface ILeagueImportInfoTableRecord {
-  name: string
-  message: string
-  type: 'Error' | 'Duplicate'
-  idx: number
-}
 
 type TColumns<T> = TableProps<T>['columns']
 type TTablePaginationConfig = Exclude<GetProp<TableProps, 'pagination'>, boolean>
 
 interface ITableParams {
   pagination?: TTablePaginationConfig
-  sortField?: SorterResult<ILeagueImportInfoTableRecord>['field']
-  sortOrder?: SorterResult<ILeagueImportInfoTableRecord>['order']
+  sortField?: SorterResult<IImportSeasonTableRecord>['field']
+  sortOrder?: SorterResult<IImportSeasonTableRecord>['order']
   filters?: Parameters<GetProp<TableProps, 'onChange'>>[1]
 }
 
-type TDataIndex = keyof ILeagueImportInfoTableRecord
+type TDataIndex = keyof IImportSeasonTableRecord
 
 const BREADCRUMB_ITEMS = [
   {
-    title: <a href={PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE}>League & Tourn</a>,
+    title: <a href={PATH_TO_SEASONS_PAGE}>Seasons</a>,
   },
   {
     title: (
@@ -65,10 +56,11 @@ const BREADCRUMB_ITEMS = [
   },
 ]
 
-const duplicateTagStyles = { border: '1px solid #FFD770', backgroundColor: '#FFF9EB' }
-const errorTagStyles = { border: '1px solid #FF594D', backgroundColor: '#FFF1F0' }
+const duplicateTagStyles: CSSProperties = { border: '1px solid #FFD770', backgroundColor: '#FFF9EB' }
 
-const TagType: FC<{ text: 'Error' | 'Duplicate' }> = ({ text }) => {
+const errorTagStyles: CSSProperties = { border: '1px solid #FF594D', backgroundColor: '#FFF1F0' }
+
+const TagType: FC<{ text: TErrorDuplicate }> = ({ text }) => {
   const style = text === 'Duplicate' ? duplicateTagStyles : errorTagStyles
 
   return (
@@ -91,8 +83,8 @@ const TagType: FC<{ text: 'Error' | 'Duplicate' }> = ({ text }) => {
   )
 }
 
-const ImportInfo = () => {
-  const { tableRecords, duplicates, removeDuplicate } = useLeagueSlice()
+const SeasonsImportInfo = () => {
+  const { tableRecords, duplicates } = useSeasonSlice()
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
   const [tableParams, setTableParams] = useState<ITableParams>({
     pagination: {
@@ -104,55 +96,23 @@ const ImportInfo = () => {
       total: tableRecords.length,
     },
   })
-  const [updateRecord] = useUpdateLeagueMutation()
-  const { setAppNotification } = useAppSlice()
   const searchInput = useRef<InputRef>(null)
-  const [sortOrder, setSortOrder] = useState<'descend' | 'ascend' | null>(null)
+  const [sortSeasonNameOrder, setSortSeasonNameOrder] = useState<'descend' | 'ascend' | null>(null)
+  const [sortLeagueNameOrder, setSortLeagueNameOrder] = useState<'descend' | 'ascend' | null>(null)
+  const navigate = useNavigate()
 
   const handleUpdate = (idx: number) => {
     const currentDuplicate = duplicates.find((duplicate) => duplicate.index === idx)
-    const newData = currentDuplicate!.new
-    const normalizedNewRecord: Omit<IFELeague<TFullLeagueTournament>, 'createdAt' | 'updatedAt'> = {
-      ...newData,
-      type: newData.type === 0 ? 'League' : 'Tournament',
-      playoffFormat: newData.playoff_format === 0 ? 'Best Record Wins' : 'Single Elimination Bracket',
-      standingsFormat: newData.standings_format === 0 ? 'Winning %' : 'Points',
-      tiebreakersFormat: newData.tiebreakers_format === 0 ? 'Winning %' : 'Points',
-      welcomeNote: newData.welcome_note,
-      playoffsTeams: newData.playoffs_teams,
-      seasons: newData.league_seasons,
-      description: newData.description,
-    }
-
-    const backendBodyFormat: IBECreateLeagueBody = {
-      description: normalizedNewRecord.description,
-      name: normalizedNewRecord.name,
-      playoff_format: normalizedNewRecord.playoffFormat === 'Best Record Wins' ? 0 : 1,
-      playoffs_teams: normalizedNewRecord.playoffsTeams,
-      standings_format: normalizedNewRecord.standingsFormat !== 'Points' ? 0 : 1,
-      tiebreakers_format: normalizedNewRecord.tiebreakersFormat !== 'Points' ? 0 : 1,
-      type: normalizedNewRecord.type === 'League' ? 0 : 1,
-      welcome_note: normalizedNewRecord.welcomeNote,
-    }
-
-    updateRecord({ id: normalizedNewRecord.id, body: backendBodyFormat })
-      .unwrap()
-      .then(() => {
-        setAppNotification({
-          message: 'Successfully update',
-          type: 'success',
-          timestamp: new Date().getTime(),
-        })
-        setSelectedIdx(null)
-        removeDuplicate(idx)
-      })
-      .catch(() => setSelectedIdx(null))
+    const newData = currentDuplicate!.new // TODO: change fields for request into pascal case
+    console.log('>', newData)
+    // TODO: add update logic
   }
 
   const handleReset = (clearFilters: () => void) => clearFilters()
+
   const handleSearch = (confirm: FilterDropdownProps['confirm']) => confirm()
 
-  const getColumnSearchProps = (dataIndex: TDataIndex): TableColumnType<ILeagueImportInfoTableRecord> => ({
+  const getColumnSearchProps = (dataIndex: TDataIndex): TableColumnType<IImportSeasonTableRecord> => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
         <Input
@@ -203,15 +163,23 @@ const ImportInfo = () => {
     },
   })
 
-  const columns: TColumns<ILeagueImportInfoTableRecord> = [
+  const handleTableChange: TableProps['onChange'] = (pagination, _, sorter) => {
+    setTableParams({
+      pagination: {
+        ...pagination,
+      },
+    })
+
+    if (!Array.isArray(sorter) && sorter.field === 'name') setSortSeasonNameOrder(sorter.order || null)
+    if (!Array.isArray(sorter) && sorter.field === 'leagueName') setSortLeagueNameOrder(sorter.order || null)
+  }
+
+  const columns: TColumns<IImportSeasonTableRecord> = [
     {
-      title: 'League/Tourn name',
+      title: 'Season name',
       dataIndex: 'name',
-      filterSearch: true,
-      onFilter: (value, record) => record.name.startsWith(value as string),
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortDirections: ['ascend', 'descend'],
-      sortOrder: sortOrder,
+      sorter: (s1, s2) => s1.name.localeCompare(s2.name),
+      sortOrder: sortSeasonNameOrder,
       ...getColumnSearchProps('name'),
       render: (value, record) => (
         <Typography.Text
@@ -222,6 +190,26 @@ const ImportInfo = () => {
           onClick={() => {
             record.type === 'Duplicate' && setSelectedIdx(record.idx)
           }}
+        >
+          {value}
+        </Typography.Text>
+      ),
+    },
+    {
+      title: 'Linked League/Tourn',
+      dataIndex: 'leagueName',
+      width: '20vw',
+
+      sortOrder: sortLeagueNameOrder,
+      sorter: (s1, s2) => s1.name.localeCompare(s2.name),
+      ...getColumnSearchProps('leagueName'),
+      render: (value, record) => (
+        <Typography.Text
+          style={{
+            color: '#3E34CA',
+            cursor: 'pointer',
+          }}
+          onClick={() => navigate(PATH_TO_LEAGUE_TOURNAMENT_PAGE + '/' + record.leagueId)}
         >
           {value}
         </Typography.Text>
@@ -269,32 +257,19 @@ const ImportInfo = () => {
     },
   ]
 
-  const handleTableChange: TableProps['onChange'] = (pagination, filters, sorter) => {
-    setTableParams({
-      pagination: {
-        ...pagination,
-      },
-      filters,
-      sortOrder: Array.isArray(sorter) ? undefined : sorter.order,
-      sortField: Array.isArray(sorter) ? undefined : sorter.field,
-    })
-
-    setSortOrder(Array.isArray(sorter) ? null : sorter.order || null)
-  }
-
   return (
     <>
-      {selectedIdx !== null && <ReviewUpdateModal idx={selectedIdx} onClose={() => setSelectedIdx(null)} />}
+      {selectedIdx !== null && <SeasonsReviewUpdateModal idx={selectedIdx} onClose={() => setSelectedIdx(null)} />}
 
       <BaseLayout>
-        <Flex className={classes.container} vertical>
+        <Flex style={containerStyles} vertical>
           <Breadcrumb items={BREADCRUMB_ITEMS} />
 
-          <Typography.Title level={1} className={classes.title}>
+          <Typography.Title level={1} style={titleStyle}>
             Import info
           </Typography.Title>
 
-          <Typography.Text className={classes.description}>
+          <Typography.Text style={descriptionStyle}>
             This panel provides a summary of your CSV import, listing rows with errors and duplicates. Click on any
             duplicate to review details, compare and decide whether to keep existing records or replace them with new
             entries. This helps ensure your data is accurate and up-to-date.
@@ -313,4 +288,4 @@ const ImportInfo = () => {
   )
 }
 
-export default ImportInfo
+export default SeasonsImportInfo

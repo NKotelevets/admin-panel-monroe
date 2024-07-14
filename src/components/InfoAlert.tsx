@@ -5,7 +5,7 @@ import { ReactSVG } from 'react-svg'
 
 import { useAppSlice } from '@/redux/hooks/useAppSlice'
 
-import InfoIcon from '@/assets/icons/info.svg'
+import ErrorIcon from '@/assets/icons/error.svg'
 
 const backgroundStyles: CSSProperties = {
   position: 'absolute',
@@ -18,8 +18,8 @@ const backgroundStyles: CSSProperties = {
 const alertStyles: CSSProperties = {
   width: 'calc(40vw - 48px)',
   padding: '9px 16px',
-  backgroundColor: '#F1F0FF',
-  borderColor: '#A49EFF',
+  backgroundColor: '#FFF1F0',
+  borderColor: '#FFCCC7',
   borderRadius: '2px',
 }
 
@@ -28,6 +28,7 @@ const alertTypographyStyles: CSSProperties = {
   fontSize: '14px',
   fontWeight: 400,
   cursor: 'pointer',
+  marginLeft: '4px',
 }
 
 const InfoAlert = () => {
@@ -44,17 +45,19 @@ const InfoAlert = () => {
       {infoNotification.message && (
         <Alert
           style={alertStyles}
-          message={infoNotification.message}
+          message={
+            <>
+              {infoNotification.message}
+              <Typography.Text style={alertTypographyStyles} onClick={handleClick}>
+                {infoNotification.actionLabel}
+              </Typography.Text>
+            </>
+          }
           showIcon
-          type="info"
-          icon={<ReactSVG src={InfoIcon} style={{ marginTop: '5px' }} />}
+          type="error"
+          icon={<ReactSVG src={ErrorIcon} />}
           closable
           onClose={() => clearInfoNotification()}
-          description={
-            <Typography style={alertTypographyStyles} onClick={handleClick}>
-              {infoNotification.actionLabel}
-            </Typography>
-          }
         />
       )}
     </Flex>

@@ -7,6 +7,8 @@ import { authApi } from '@/redux/auth/auth.api'
 import { authReducer } from '@/redux/auth/auth.reducer'
 import { leaguesApi } from '@/redux/leagues/leagues.api'
 import { leaguesReducer } from '@/redux/leagues/leagues.reducer'
+import { seasonsApi } from '@/redux/seasons/seasons.api'
+import { seasonsReducer } from '@/redux/seasons/seasons.reducer'
 import { userApi } from '@/redux/user/user.api'
 import { userReducer } from '@/redux/user/user.reducer'
 
@@ -30,13 +32,14 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage,
-  whitelist: ['authSlice', 'appSlice', 'userSlice', 'leaguesSlice'],
+  whitelist: ['authSlice', 'appSlice', 'userSlice', 'leaguesSlice', 'seasonsSlice'],
 }
 
 const rootReducer = combineReducers({
   ...authReducer,
   ...userReducer,
   ...leaguesReducer,
+  ...seasonsReducer,
   [appSlice.reducerPath]: appSlice.reducer,
 })
 
@@ -50,7 +53,7 @@ const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, REGISTER],
       },
-    }).concat([authApi.middleware, userApi.middleware, leaguesApi.middleware]),
+    }).concat([authApi.middleware, userApi.middleware, leaguesApi.middleware, seasonsApi.middleware]),
 })
 
 export type TRootState = ReturnType<typeof store.getState>

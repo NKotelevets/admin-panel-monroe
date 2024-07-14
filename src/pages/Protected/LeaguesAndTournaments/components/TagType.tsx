@@ -1,9 +1,10 @@
 import Space from 'antd/es/space'
 import Typography from 'antd/es/typography'
-import { FC } from 'react'
+import { CSSProperties, FC } from 'react'
 
-const tournTagStyles = { border: '1px solid #A49EFF', backgroundColor: '#F1F0FF' }
-const leagueTagStyles = { border: '1px solid #FF594D', backgroundColor: '#FFF1F0' }
+const tournTagStyles: CSSProperties = { border: '1px solid #A49EFF', backgroundColor: '#F1F0FF' }
+
+const leagueTagStyles: CSSProperties = { border: '1px solid #FF594D', backgroundColor: '#FFF1F0' }
 
 const TagType: FC<{ text: string }> = ({ text }) => {
   const style = text === 'Tourn' || text === 'Tournament' ? tournTagStyles : leagueTagStyles

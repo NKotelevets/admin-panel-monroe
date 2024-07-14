@@ -1,5 +1,5 @@
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined'
-import { Breadcrumb, Button, Flex, Space, Table, Tooltip } from 'antd'
+import { Breadcrumb, Button, Flex, Table, Tooltip } from 'antd'
 import type { GetProp, InputRef, TableColumnType, TableProps } from 'antd'
 import Input from 'antd/es/input/Input'
 import type { FilterDropdownProps, SorterResult } from 'antd/es/table/interface'
@@ -9,17 +9,16 @@ import { useNavigate } from 'react-router-dom'
 
 import BaseLayout from '@/layouts/BaseLayout'
 
-import { useLeagueSlice } from '@/redux/hooks/useLeagueSlice'
+import { useSeasonSlice } from '@/redux/hooks/useSeasonSlice'
 
-import { PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE, PATH_TO_LEAGUE_TOURNAMENT_PAGE } from '@/constants/paths'
+import { containerStyles, descriptionStyle, titleStyle } from '@/constants/deleting-importing-info.styles'
+import { PATH_TO_LEAGUE_TOURNAMENT_PAGE, PATH_TO_SEASONS_PAGE } from '@/constants/paths'
 
-import { IDeletionItemError } from '@/common/interfaces/api'
-
-import classes from './deleting-info.module.css'
+import { IDeletionSeasonItemError } from '@/common/interfaces/season'
 
 const BREADCRUMB_ITEMS = [
   {
-    title: <a href={PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE}>League & Tourn</a>,
+    title: <a href={PATH_TO_SEASONS_PAGE}>Seasons</a>,
   },
   {
     title: (
@@ -37,25 +36,17 @@ const BREADCRUMB_ITEMS = [
 type TColumns<T> = TableProps<T>['columns']
 type TTablePaginationConfig = Exclude<GetProp<TableProps, 'pagination'>, boolean>
 
-type TDataIndex = keyof IDeletionItemError
+type TDataIndex = keyof IDeletionSeasonItemError
 
 interface ITableParams {
   pagination?: TTablePaginationConfig
-  sortField?: SorterResult<IDeletionItemError>['field']
-  sortOrder?: SorterResult<IDeletionItemError>['order']
+  sortField?: SorterResult<IDeletionSeasonItemError>['field']
+  sortOrder?: SorterResult<IDeletionSeasonItemError>['order']
   filters?: Parameters<GetProp<TableProps, 'onChange'>>[1]
 }
 
-const errorTagStyles = {
-  border: '1px solid #FF594D',
-  backgroundColor: '#FFF1F0',
-  padding: '0 8px',
-  borderRadius: '2px',
-  fontSize: '12px',
-}
-
-const DeletingInfo = () => {
-  const { deletedRecordsErrors } = useLeagueSlice()
+const SeasonsDeletingInfo = () => {
+  const { deletedRecordsErrors } = useSeasonSlice()
   const [tableParams, setTableParams] = useState<ITableParams>({
     pagination: {
       current: 1,
@@ -72,7 +63,7 @@ const DeletingInfo = () => {
 
   const handleSearch = (confirm: FilterDropdownProps['confirm']) => confirm()
 
-  const getColumnSearchProps = (dataIndex: TDataIndex): TableColumnType<IDeletionItemError> => ({
+  const getColumnSearchProps = (dataIndex: TDataIndex): TableColumnType<IDeletionSeasonItemError> => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
         <Input
@@ -123,9 +114,9 @@ const DeletingInfo = () => {
     },
   })
 
-  const columns: TColumns<IDeletionItemError> = [
+  const columns: TColumns<IDeletionSeasonItemError> = [
     {
-      title: 'League/Tourn name',
+      title: 'Season name',
       dataIndex: 'name',
       filterSearch: true,
       filterMode: 'tree',
@@ -134,42 +125,46 @@ const DeletingInfo = () => {
       width: '20vw',
       sorter: (a, b) => a.name.length - b.name.length,
       sortOrder: tableParams.sortOrder,
-      ...getColumnSearchProps('name'),
-      render: (value, record) => (
+      // ...getColumnSearchProps('name'),
+      render: (value) => (
         <Typography.Text
           style={{
             color: '#3E34CA',
             cursor: 'pointer',
           }}
-          onClick={() => navigate(PATH_TO_LEAGUE_TOURNAMENT_PAGE + '/' + record.id)}
         >
           {value}
         </Typography.Text>
       ),
     },
     {
-      title: 'Status',
+      title: 'Linked League/Tourn',
       dataIndex: '',
-      width: '60px',
-      render: () => (
-        <Space style={errorTagStyles}>
-          <Typography.Text
-            style={{
-              color: '#BC261B',
-            }}
-          >
-            Error
-          </Typography.Text>
-        </Space>
+      filterSearch: true,
+      filterMode: 'tree',
+      width: '20vw',
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortOrder: tableParams.sortOrder,
+      ...getColumnSearchProps('league'),
+      render: (_, record) => (
+        <Typography.Text
+          style={{
+            color: '#3E34CA',
+            cursor: 'pointer',
+          }}
+          onClick={() => navigate(`${PATH_TO_LEAGUE_TOURNAMENT_PAGE}/${record.league.id}`)}
+        >
+          {record.league.name}
+        </Typography.Text>
       ),
     },
     {
       title: 'Error info',
       dataIndex: 'error',
-      width: '300px',
+      width: '200px',
       render: (value) => (
         <>
-          {value?.length > 80 ? (
+          {value?.length > 30 ? (
             <Tooltip
               title={value}
               placement="top"
@@ -183,7 +178,7 @@ const DeletingInfo = () => {
                   color: 'rgba(26, 22, 87, 0.85)',
                 }}
               >
-                {value.substring(0, 77).trim() + '...'}
+                {value.substring(0, 27).trim() + '...'}
               </Typography.Text>
             </Tooltip>
           ) : (
@@ -211,16 +206,16 @@ const DeletingInfo = () => {
 
   return (
     <BaseLayout>
-      <Flex className={classes.container} vertical>
+      <Flex style={containerStyles} vertical>
         <Breadcrumb items={BREADCRUMB_ITEMS} />
 
-        <Typography.Title level={1} className={classes.title}>
+        <Typography.Title level={1} style={titleStyle}>
           Deleting info
         </Typography.Title>
 
-        <Typography.Text className={classes.description}>
-          This panel provides a summary of deleted leagues/tournaments, listing the rows with errors. Click on the error
-          to view the details and correct the error that is preventing deletion.
+        <Typography.Text style={descriptionStyle}>
+          This panel provides a summary of deleted seasons, listing the rows with errors. Click on the error to view the
+          details and correct the error that is preventing deletion.
         </Typography.Text>
 
         <Table
@@ -235,5 +230,5 @@ const DeletingInfo = () => {
   )
 }
 
-export default DeletingInfo
+export default SeasonsDeletingInfo
 

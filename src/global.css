@@ -90,7 +90,7 @@ svg {
 }
 
 .ant-table-wrapper .ant-table-tbody .ant-table-row.ant-table-row-selected>.ant-table-cell {
-  background: transparent !important;
+  background: white !important;
 }
 
 .ant-pagination,
@@ -102,6 +102,10 @@ svg {
 .ant-table-wrapper .ant-table-column-sorter-up.active,
 .ant-table-wrapper .ant-table-column-sorter-down.active {
   color: rgba(26, 22, 87, 1) !important
+}
+
+.ant-table-wrapper td.ant-table-column-sort {
+  background-color: white;
 }
 
 /* Table styles - end */
