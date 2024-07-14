@@ -1,5 +1,5 @@
 import { Flex, Input, Typography } from 'antd'
-import { ChangeEventHandler, FC } from 'react'
+import { CSSProperties, ChangeEventHandler, FC } from 'react'
 
 import './monroe-input.style.css'
 
@@ -12,6 +12,7 @@ interface IMonroeInputProps {
   error?: string
   inputClasses?: string
   labelClasses?: string
+  style?: CSSProperties
 }
 
 const MonroeInput: FC<IMonroeInputProps> = ({ label, error, inputClasses, labelClasses, ...rest }) => (

@@ -14,6 +14,9 @@ export const PATH_TO_LEAGUE_TOURNAMENT_DELETING_INFO = '/leagues-and-tournaments
 export const PATH_TO_SEASONS_PAGE = '/seasons'
 export const PATH_TO_SEASONS_DELETING_INFO = '/seasons/deleting-info'
 export const PATH_TO_SEASONS_IMPORT_INFO = '/seasons/import-info'
+export const PATH_TO_SEASONS_CREATE = '/seasons/create'
+export const PATH_TO_SEASONS_DETAILS = '/seasons'
+export const PATH_TO_SEASONS_EDIT_DETAILS = '/seasons/edit'
 
 export const PATH_TO_USERS_PAGE = '/users'
 export const PATH_TO_MASTER_TEAMS_PAGE = '/master-teams'

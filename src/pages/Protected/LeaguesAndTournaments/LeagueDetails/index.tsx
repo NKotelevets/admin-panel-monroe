@@ -15,7 +15,11 @@ import BaseLayout from '@/layouts/BaseLayout'
 
 import { useDeleteLeagueMutation, useGetLeagueQuery } from '@/redux/leagues/leagues.api'
 
-import { PATH_TO_EDIT_LEAGUE_TOURNAMENT, PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE } from '@/constants/paths'
+import {
+  PATH_TO_EDIT_LEAGUE_TOURNAMENT,
+  PATH_TO_LEAGUES_AND_TOURNAMENTS_PAGE,
+  PATH_TO_SEASONS_DETAILS,
+} from '@/constants/paths'
 
 import { IIdName } from '@/common/interfaces'
 
@@ -201,7 +205,15 @@ const LeagueDetails = () => {
                   {data?.seasons.length
                     ? (data?.seasons as IIdName[]).map((season, idx) => (
                         <Fragment key={season.id}>
-                          <Typography.Text className="view-season-text">{season.name}</Typography.Text>
+                          <Typography.Text
+                            className="view-season-text"
+                            onClick={() => navigate(`${PATH_TO_SEASONS_DETAILS}/${season.id}`)}
+                            style={{
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {season.name}
+                          </Typography.Text>
 
                           {idx === data.seasons.length - 1 ? (
                             ''

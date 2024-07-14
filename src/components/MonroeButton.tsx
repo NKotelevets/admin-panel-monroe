@@ -1,19 +1,20 @@
 import { Button } from 'antd'
-import { FC, ReactNode } from 'react'
+import { CSSProperties, FC, ReactNode } from 'react'
 
 interface IMonroeButtonProps {
   label: string
-  isDisabled: boolean
+  isDisabled?: boolean
   type: 'link' | 'text' | 'primary' | 'default' | 'dashed' | undefined
   onClick?: () => void
   htmlType?: 'button' | 'submit' | 'reset'
   className?: string
   icon?: ReactNode
   iconPosition?: 'start' | 'end' | undefined
+  style?: CSSProperties
 }
 
 const MonroeButton: FC<IMonroeButtonProps> = ({
-  isDisabled,
+  isDisabled = false,
   label,
   onClick,
   type,
@@ -21,6 +22,7 @@ const MonroeButton: FC<IMonroeButtonProps> = ({
   className,
   icon,
   iconPosition,
+  style = {},
 }) => (
   <Button
     className={className}
@@ -29,6 +31,7 @@ const MonroeButton: FC<IMonroeButtonProps> = ({
       height: '40px',
       width: '100%',
       fontSize: '16px',
+      ...style,
     }}
     type={type}
     onClick={onClick}

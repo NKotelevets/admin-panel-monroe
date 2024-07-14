@@ -17,11 +17,12 @@ interface ISeasonsSliceState {
   limit: number
   offset: number
   total: number
-  order_by: string | null
+  ordering: string | null
   createdRecordsNames: string[]
   deletedRecordsErrors: IDeletionSeasonItemError[]
   tableRecords: IImportSeasonTableRecord[]
   duplicates: ISeasonDuplicate[]
+  orderBy: string | null
 }
 
 const seasonsSliceState: ISeasonsSliceState = {
@@ -29,11 +30,12 @@ const seasonsSliceState: ISeasonsSliceState = {
   limit: 10,
   offset: 0,
   total: 0,
-  order_by: null,
+  ordering: null,
   deletedRecordsErrors: [],
   tableRecords: [],
   createdRecordsNames: [],
   duplicates: [],
+  orderBy: null,
 }
 
 export const seasonsSlice = createSlice({
@@ -45,12 +47,12 @@ export const seasonsSlice = createSlice({
       action: PayloadAction<{
         limit: number
         offset: number
-        order_by: string
+        ordering: string | null
       }>,
     ) => {
       state.limit = action.payload.limit
       state.offset = action.payload.offset
-      state.order_by = action.payload.order_by as 'asc' | 'desc'
+      state.ordering = action.payload.ordering
     },
     removeCreatedRecordsNames: (state) => {
       state.createdRecordsNames = []

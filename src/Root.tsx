@@ -8,6 +8,9 @@ import LeagueDetails from '@/pages/Protected/LeaguesAndTournaments/LeagueDetails
 import LeaguesDeletingInfo from '@/pages/Protected/LeaguesAndTournaments/LeaguesDeletingInfo'
 import LeaguesImportInfo from '@/pages/Protected/LeaguesAndTournaments/LeaguesImportInfo'
 import Seasons from '@/pages/Protected/Seasons'
+import CreateSeason from '@/pages/Protected/Seasons/CreateSeason'
+import EditSeason from '@/pages/Protected/Seasons/EditSeason'
+import { SeasonDetails } from '@/pages/Protected/Seasons/SeasonDetails'
 import SeasonsDeletingInfo from '@/pages/Protected/Seasons/SeasonsDeletingInfo'
 import SeasonsImportInfo from '@/pages/Protected/Seasons/SeasonsImportInfo'
 
@@ -23,7 +26,10 @@ import {
   PATH_TO_LEAGUE_TOURNAMENT_DELETING_INFO,
   PATH_TO_LEAGUE_TOURNAMENT_IMPORT_INFO,
   PATH_TO_LEAGUE_TOURNAMENT_PAGE,
+  PATH_TO_SEASONS_CREATE,
   PATH_TO_SEASONS_DELETING_INFO,
+  PATH_TO_SEASONS_DETAILS,
+  PATH_TO_SEASONS_EDIT_DETAILS,
   PATH_TO_SEASONS_IMPORT_INFO,
   PATH_TO_SEASONS_PAGE,
   PATH_TO_SIGN_IN_PAGE,
@@ -49,6 +55,9 @@ const Root = () => (
       <Route path={PATH_TO_SEASONS_PAGE} element={<Seasons />} />
       <Route path={PATH_TO_SEASONS_DELETING_INFO} element={<SeasonsDeletingInfo />} />
       <Route path={PATH_TO_SEASONS_IMPORT_INFO} element={<SeasonsImportInfo />} />
+      <Route path={PATH_TO_SEASONS_CREATE} element={<CreateSeason />} />
+      <Route path={`${PATH_TO_SEASONS_DETAILS}/:id`} element={<SeasonDetails />} />
+      <Route path={`${PATH_TO_SEASONS_EDIT_DETAILS}/:id`} element={<EditSeason />} />
     </Routes>
   </AuthProvider>
 )

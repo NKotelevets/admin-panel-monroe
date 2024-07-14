@@ -6,6 +6,7 @@ import { IPaginationResponse } from '@/common/interfaces/api'
 import {
   IBESeason,
   IDeleteSeasonsResponse,
+  IFESeason,
   IGetSeasonsRequestParams,
   IGetSeasonsResponse,
   IImportSeasonsResponse,
@@ -70,7 +71,6 @@ export const seasonsApi = createApi({
       }),
       invalidatesTags: [SEASON_TAG],
     }),
-
     updateSeason: builder.mutation<
       void,
       {
@@ -84,6 +84,21 @@ export const seasonsApi = createApi({
         method: 'PUT',
       }),
     }),
+    getSeasonDetails: builder.query<IFESeason, string>({
+      query: (id) => ({
+        url: `teams/seasons/${id}`,
+      }),
+      transformResponse: (response: IBESeason): IFESeason => ({
+        createdAt: response.created_at,
+        divisions: response.divisions,
+        expectedEndDate: response.expected_end_date,
+        id: response.id,
+        league: response.league,
+        name: response.name,
+        startDate: response.start_date,
+        updatedAt: response.updated_at,
+      }),
+    }),
   }),
 })
 
@@ -93,7 +108,7 @@ export const {
   useBulkSeasonsDeleteMutation,
   useDeleteAllSeasonsMutation,
   useImportSeasonsCSVMutation,
-
   useUpdateSeasonMutation,
+  useGetSeasonDetailsQuery,
 } = seasonsApi
 

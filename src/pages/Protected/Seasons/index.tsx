@@ -25,7 +25,7 @@ import {
   useImportSeasonsCSVMutation,
 } from '@/redux/seasons/seasons.api'
 
-import { PATH_TO_SEASONS_DELETING_INFO, PATH_TO_SEASONS_IMPORT_INFO } from '@/constants/paths'
+import { PATH_TO_SEASONS_CREATE, PATH_TO_SEASONS_DELETING_INFO, PATH_TO_SEASONS_IMPORT_INFO } from '@/constants/paths'
 
 const createNewSeasonStyles: CSSProperties = {
   borderRadius: '2px',
@@ -266,7 +266,13 @@ const Seasons = () => {
                 Import CSV
               </Button>
 
-              <Button icon={<PlusOutlined />} iconPosition="start" type="primary" style={createNewSeasonStyles}>
+              <Button
+                icon={<PlusOutlined />}
+                iconPosition="start"
+                type="primary"
+                style={createNewSeasonStyles}
+                onClick={() => navigate(PATH_TO_SEASONS_CREATE)}
+              >
                 Create new season
               </Button>
             </Flex>

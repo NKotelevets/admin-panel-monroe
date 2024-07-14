@@ -1,4 +1,4 @@
-import { IBEDivision } from '@/common/interfaces/division'
+import { IBEDivision, IFEDivision } from '@/common/interfaces/division'
 import { IBELeague } from '@/common/interfaces/league'
 import { TDeletionStatus, TErrorDuplicate } from '@/common/types'
 
@@ -14,6 +14,14 @@ export interface IBESeason extends ISeasonCommonFields {
   created_at: string
   start_date: string
   expected_end_date: string
+}
+
+export interface IFECreateSeason {
+  name: string
+  startDate: string
+  expectedEndDate: string
+  league: string
+  divisions: IFEDivision[]
 }
 
 export interface ICreateBESeason {
@@ -34,10 +42,9 @@ export interface IFESeason extends ISeasonCommonFields {
 export interface IGetSeasonsRequestParams {
   limit: number
   offset: number
-  league_name?: string | undefined
+  league__name?: string | undefined
   name?: string
-  ordering?: string
-  order_by?: string
+  ordering?: string | null
   search?: string
 }
 
